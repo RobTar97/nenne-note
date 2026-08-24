@@ -1,0 +1,37 @@
+name: Feature request
+description: Suggest an idea
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before writing this up, please read
+        [what this project is](https://github.com/RobTar97/nenne-note/blob/main/CONTRIBUTING.md#what-this-project-is).
+        Some things — cloud sync, accounts, analytics, colour — are deliberate
+        boundaries rather than missing features, and a request for them will
+        very likely be declined however well argued.
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What is hard or annoying today? Describe the situation, not the solution.
+      placeholder: At 3am I want to ... but I have to ...
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: What you have in mind
+    validations:
+      required: true
+  - type: textarea
+    id: taps
+    attributes:
+      label: Does this add a step to logging?
+      description: >
+        The core promise is two taps to log something. If your idea adds a tap
+        to the common path, say how you would keep that promise.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered

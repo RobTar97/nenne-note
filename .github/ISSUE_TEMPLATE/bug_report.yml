@@ -1,0 +1,62 @@
+name: Bug report
+description: Something behaves incorrectly
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time. The most useful field below is **what you
+        expected** — a lot of this app's behaviour is a deliberate choice, and
+        knowing what you expected tells us whether it is a bug or a decision
+        worth revisiting.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What did the app actually do?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected instead
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the quick log
+        2. Switch to 授乳
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device and OS
+      placeholder: Pixel 8, Android 15
+    validations:
+      required: true
+  - type: dropdown
+    id: how-run
+    attributes:
+      label: How were you running it?
+      options:
+        - Expo Go
+        - Development build
+        - Release build / installed APK
+        - Not sure
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: Settings → バージョン, or the commit you built from
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else
+      description: Screenshots, a screen recording, or logs are all welcome.

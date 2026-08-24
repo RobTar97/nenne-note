@@ -1,0 +1,226 @@
+import type { Dictionary } from './ja';
+
+/** English — the optional secondary language. Mirrors the mockups' wording. */
+export const en: Dictionary = {
+  common: {
+    save: 'Save log',
+    cancel: 'Cancel',
+    delete: 'Delete',
+    close: 'Close',
+    back: 'Back',
+    done: 'Done',
+    edit: 'Edit',
+    today: 'Today',
+    now: 'Now',
+    all: 'All',
+    none: 'Nothing yet',
+    optional: 'optional',
+    start: 'Start',
+    stop: 'Stop',
+    pause: 'Pause',
+    resume: 'Resume',
+  },
+
+  kind: {
+    diaper: 'Diaper',
+    feed: 'Feed',
+    sleep: 'Sleep',
+  },
+
+  diaper: {
+    pee: 'Pee',
+    poop: 'Poop',
+    both: 'Both',
+  },
+
+  feed: {
+    bottle: 'Bottle',
+    breast: 'Breast',
+    solid: 'Solids',
+    left: 'Left',
+    right: 'Right',
+    amount: 'Amount',
+    side: 'Side',
+    nursing: 'Nursing',
+  },
+
+  greeting: {
+    morning: 'Good morning',
+    afternoon: 'Good afternoon',
+    evening: 'Good evening',
+    night: 'You’re doing great',
+  },
+
+  caregiver: {
+    mama: 'Mama',
+    papa: 'Papa',
+    none: '',
+  },
+
+  home: {
+    title: 'Baby Log',
+    ageDays: (n: number) => `${n} ${n === 1 ? 'day' : 'days'} old`,
+    ageMonths: (m: number, d: number) =>
+      d > 0 ? `${m}m ${d}d old` : `${m} ${m === 1 ? 'month' : 'months'} old`,
+    lastDiaper: 'Last diaper',
+    lastFeed: 'Last feeding',
+    lastSleep: 'Last sleep',
+    quickAdd: 'Quick add',
+    noRecord: 'No logs yet',
+    sleeping: 'Sleeping',
+    nursing: 'Nursing',
+    tapToStop: 'Tap to stop',
+  },
+
+  log: {
+    title: 'Quick log',
+    editTitle: 'Edit log',
+    what: 'What happened?',
+    when: 'When?',
+    note: 'Note',
+    notePlaceholder: 'Optional note',
+    saved: 'Saved',
+    amountPlaceholder: '120',
+    ml: 'ml',
+    startNursing: 'Start nursing',
+    startSleep: 'Start sleep',
+    running: 'running',
+    deleteConfirm: 'Delete this log?',
+  },
+
+  today: {
+    title: 'Today',
+    empty: 'Nothing logged today yet',
+    emptyHint: 'Use the buttons below to add one',
+    encouragement: (who: string) =>
+      who ? `You’re doing an amazing job, ${who}` : 'You’re doing an amazing job',
+  },
+
+  summary: {
+    title: 'Daily summary',
+    subtitle: (name: string) => `${name} · Today`,
+    diaperTitle: 'Diaper',
+    feedTitle: 'Feeding',
+    sleepTitle: 'Sleep',
+    totalFeeds: 'Total feeds',
+    lastFeeding: 'Last feeding',
+    totalSleep: 'Total sleep',
+    lastNap: 'Last nap',
+    todaySuffix: 'today',
+    times: (n: number) => `${n}`,
+    allGood: 'Everything looks okay today',
+    quiet: 'A quiet day so far',
+  },
+
+  stats: {
+    title: 'Trends',
+    week: '7 days',
+    month: '30 days',
+    feedsPerDay: 'Feeds per day',
+    sleepPerDay: 'Sleep per day',
+    diapersPerDay: 'Diapers per day',
+    rhythm: 'Their rhythm',
+    feedGap: 'Between feeds',
+    napLength: 'Nap length',
+    nextFeed: 'Next feed likely',
+    notEnough: 'A few more days of logs and their rhythm will show up here',
+    aroundTime: (t: string) => `around ${t}`,
+    everyMinutes: (m: number) =>
+      m >= 60 ? `every ${Math.floor(m / 60)}h${m % 60 ? ` ${m % 60}m` : ''}` : `every ${m}m`,
+  },
+
+  growth: {
+    title: 'Growth',
+    weight: 'Weight',
+    height: 'Height',
+    head: 'Head',
+    add: 'Add measurement',
+    addTitle: 'New measurement',
+    editTitle: 'Edit measurement',
+    empty: 'No measurements yet',
+    emptyHint: 'Log a weight or height and\nthe chart will appear here',
+    latest: 'Latest',
+    sincePrev: (v: string) => `${v} since last time`,
+    measuredOn: 'When?',
+    deleteConfirm: 'Delete this measurement?',
+    needOne: 'Enter at least one value',
+    noReference: 'No percentile curves are included. Talk to your paediatrician about anything that worries you.',
+  },
+
+  milestones: {
+    title: 'Firsts',
+    progress: (n: number, total: number) => `${n} / ${total}`,
+    hint: 'Tap to record one',
+    tapDate: 'Change the date',
+  },
+
+  reminders: {
+    section: 'Reminders',
+    feed: 'Feed reminder',
+    feedHint: 'Interval',
+    every: (m: number) => (m % 60 === 0 ? `${m / 60}h` : `${Math.floor(m / 60)}h ${m % 60}m`),
+    timer: 'Forgotten timer',
+    timerHint: 'Nudges after 4 hours',
+    denied: 'Notifications are off. Turn them on in your device settings.',
+    unavailable: 'Notifications are not available here.',
+    feedTitle: 'Time for a feed?',
+    feedBody: (name: string, since: string) => `It has been ${since} since ${name} last fed`,
+    timerTitle: 'A timer is still running',
+    timerBody: (kind: string) => `The ${kind} timer has been running a while. Did you forget to stop it?`,
+  },
+
+  settings: {
+    title: 'Settings',
+    babySection: 'Baby',
+    name: 'Name',
+    birthday: 'Birthday',
+    appSection: 'App',
+    language: 'Language',
+    haptics: 'Haptic feedback',
+    callMe: 'Call me',
+    dataSection: 'Data',
+    reset: 'Delete all logs',
+    resetConfirm: 'This deletes every log. It cannot be undone.',
+    about: 'About',
+    version: 'Version',
+  },
+
+  onboarding: {
+    welcome: 'Welcome to Nenne Note',
+    lead: 'Log diapers, feeds and sleep\nin a couple of taps',
+    namePrompt: 'What’s your baby’s name?',
+    namePlaceholder: 'Name',
+    birthdayPrompt: 'When were they born?',
+    ready: (name: string) => `Let’s start logging for ${name}`,
+    next: 'Next',
+    begin: 'Begin',
+    setupTitle: 'About your baby',
+    setupLead: 'You can change any of this later in settings',
+    step: (n: number, total: number) => `${n} / ${total}`,
+    cards: {
+      diaperTitle: 'Diapers',
+      diaperBody: 'Pee and poop in a single tap',
+      feedTitle: 'Feeding',
+      feedBody: 'Bottle volume, or time on each side',
+      sleepTitle: 'Sleep',
+      sleepBody: 'A timer that records the whole nap',
+    },
+  },
+
+  units: {
+    hour: 'h',
+    minute: 'm',
+    second: 's',
+    ml: 'ml',
+    kg: 'kg',
+    cm: 'cm',
+  },
+
+  a11y: {
+    settings: 'Open settings',
+    home: 'Back to home',
+    summary: 'Open daily summary',
+    close: 'Close',
+    quickLog: (kind: string) => `Log ${kind}`,
+  },
+};
