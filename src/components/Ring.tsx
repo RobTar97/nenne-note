@@ -28,12 +28,15 @@ export function Ring({
   size = 104,
   width = 5.5,
   progress,
+  label,
   children,
 }: {
   size?: number;
   width?: number;
   /** 0–1. Values above 1 are clamped; a 26-hour day isn't a thing. */
   progress: number;
+  /** Spoken description. Without it the ring is invisible to a screen reader. */
+  label?: string;
   children?: React.ReactNode;
 }) {
   const r = (size - width) / 2;
@@ -52,7 +55,13 @@ export function Ring({
   }));
 
   return (
-    <View style={{ width: size, height: size }}>
+    <View
+      style={{ width: size, height: size }}
+      accessible
+      accessibilityRole="progressbar"
+      accessibilityLabel={label}
+      accessibilityValue={{ min: 0, max: 100, now: Math.round(target * 100) }}
+    >
       <Svg width={size} height={size}>
         <Circle
           cx={size / 2}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, Platform, ScrollView, StyleSheet, Switch, TextInput, View } from 'react-native';
+import { Alert, Platform, StyleSheet, Switch, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -8,16 +8,26 @@ import { ja as jaLocale, enUS } from 'date-fns/locale';
 import Constants from 'expo-constants';
 
 import { Screen, Header, SCREEN_PADDING } from '@/components/Screen';
+import { LongScroll } from '@/components/LongScroll';
 import { Txt } from '@/components/Txt';
 import { Press } from '@/components/Press';
 import { Card } from '@/components/Surface';
-import { ChevronLeftIcon, ChevronRightIcon, GlobeIcon, GrowthIcon, SparkleIcon } from '@/icons';
-import { color, radius, space } from '@/design/tokens';
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  GlobeIcon,
+  GrowthIcon,
+  HeartIcon,
+  SparkleIcon,
+} from '@/icons';
+import { HIT_TARGET, color, hitSlop as makeHitSlop, radius, space } from '@/design/tokens';
 import { text } from '@/design/type';
 import { useApp } from '@/store/app';
 import { updateBaby, wipeAll } from '@/db/repo';
 import { dayKey, parseDayKey } from '@/utils/time';
 import { FEED_INTERVALS, type Caregiver } from '@/db/types';
+import { suggestedReminderMin } from '@/data/feeding';
+import { ageInDays } from '@/utils/time';
 import { remindersAvailable, requestPermission } from '@/notifications/reminders';
 
 export default function Settings() {
@@ -68,6 +78,14 @@ export default function Settings() {
     }
     haptic.tap();
     update(key, true);
+
+    // First time the feed reminder is switched on, start it at the interval
+    // typical for this baby's age rather than a fixed three hours — a newborn
+    // and a nine-month-old are not on the same clock. The user can change it
+    // immediately; the pills are right below.
+    if (key === 'remindFeed' && baby) {
+      update('remindFeedMin', suggestedReminderMin(ageInDays(baby.birthday), FEED_INTERVALS));
+    }
   };
 
   const confirmReset = () => {
@@ -92,7 +110,7 @@ export default function Settings() {
         left={{ icon: <ChevronLeftIcon size={24} />, onPress: () => router.back(), label: t.common.back }}
       />
 
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+      <LongScroll backToTopLabel={t.common.backToTop} contentContainerStyle={styles.scroll}>
         <Section title={t.settings.babySection}>
           <Row label={t.settings.name}>
             <TextInput
@@ -180,6 +198,7 @@ export default function Settings() {
           <Row label={t.settings.haptics}>
             <Switch
               value={settings.haptics}
+              accessibilityLabel={t.settings.haptics}
               onValueChange={(v) => {
                 // Fire the feedback as it turns on, so the setting demonstrates itself.
                 if (v) haptic.tap();
@@ -196,6 +215,7 @@ export default function Settings() {
           <Row label={t.reminders.feed}>
             <Switch
               value={settings.remindFeed}
+              accessibilityLabel={t.reminders.feed}
               onValueChange={(v) => enableReminder('remindFeed', v)}
               trackColor={{ false: color.hairline, true: color.ink }}
               thumbColor={color.surface}
@@ -224,6 +244,7 @@ export default function Settings() {
           <Row label={t.reminders.timer}>
             <Switch
               value={settings.remindTimer}
+              accessibilityLabel={t.reminders.timer}
               onValueChange={(v) => enableReminder('remindTimer', v)}
               trackColor={{ false: color.hairline, true: color.ink }}
               thumbColor={color.surface}
@@ -242,12 +263,20 @@ export default function Settings() {
           </Press>
         </Section>
 
+        <Section title={t.support.title}>
+          <Link
+            label={t.support.row}
+            icon={<HeartIcon size={17} color={color.inkMuted} />}
+            onPress={() => router.push('/support')}
+          />
+        </Section>
+
         <View style={styles.about}>
           <Txt variant="caption" center>
             {t.settings.version} {Constants.expoConfig?.version ?? '1.0.0'}
           </Txt>
         </View>
-      </ScrollView>
+      </LongScroll>
     </Screen>
   );
 }
@@ -330,6 +359,7 @@ function Choices<T extends string>({
             onPress={() => onChange(o.value)}
             accessibilityState={{ selected: on }}
             accessibilityLabel={o.label}
+            hitSlop={makeHitSlop(34)}
             scale={0.94}
             style={[styles.choice, on ? styles.choiceOn : null]}
           >
@@ -381,6 +411,7 @@ const styles = StyleSheet.create({
   },
   input: {
     minWidth: 120,
+    minHeight: HIT_TARGET,
     paddingVertical: space.sm,
   },
   divider: {

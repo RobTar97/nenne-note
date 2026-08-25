@@ -73,6 +73,19 @@ const MIGRATIONS: ((db: SQLiteDatabase) => Promise<void>)[] = [
       );
     `);
   },
+
+  // v2 — tandem nursing: both breasts at once
+  async (db) => {
+    // `active_side` carries a CHECK constraint, and SQLite cannot alter one
+    // without rebuilding the table — a drop-and-rename that risks the whole
+    // log if it is interrupted. A separate flag is a single atomic
+    // `ADD COLUMN` instead, which is exactly the kind of migration that cannot
+    // half-apply.
+    const cols = await db.getAllAsync<{ name: string }>('PRAGMA table_info(entry)');
+    if (!cols.some((c) => c.name === 'active_both')) {
+      await db.execAsync('ALTER TABLE entry ADD COLUMN active_both INTEGER NOT NULL DEFAULT 0');
+    }
+  },
 ];
 
 export async function migrate(db: SQLiteDatabase) {

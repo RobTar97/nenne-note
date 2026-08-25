@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { format } from 'date-fns';
 import { ja as jaLocale, enUS } from 'date-fns/locale';
 
 import { Screen, Header, SCREEN_PADDING } from '@/components/Screen';
+import { LongScroll } from '@/components/LongScroll';
 import { Txt } from '@/components/Txt';
 import { CardPress, Medallion } from '@/components/Surface';
 import { FilterPills } from '@/components/FilterPills';
@@ -98,7 +99,7 @@ export default function Today() {
         <FilterPills options={options} value={filter} onChange={setFilter} onHaptic={haptic.select} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+      <LongScroll backToTopLabel={t.common.backToTop} contentContainerStyle={styles.scroll}>
         {visible.length === 0 ? (
           <View style={styles.empty}>
             <PeekBear width={148} eyes="awake" hearts={false} color={color.inkFaint} />
@@ -130,7 +131,7 @@ export default function Today() {
             <HeartIcon size={14} color={color.ink} />
           </View>
         </View>
-      </ScrollView>
+      </LongScroll>
     </Screen>
   );
 }

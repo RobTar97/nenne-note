@@ -7,6 +7,7 @@ import type {
   FeedKind,
   Growth,
   Milestone,
+  NursingSide,
   Settings,
   Side,
 } from './types';
@@ -27,6 +28,7 @@ type EntryRow = {
   left_sec: number;
   right_sec: number;
   active_side: Side | null;
+  active_both: number;
   side_since: number | null;
   created_at: number;
   updated_at: number;
@@ -45,6 +47,7 @@ const toEntry = (r: EntryRow): Entry => ({
   leftSec: r.left_sec,
   rightSec: r.right_sec,
   activeSide: r.active_side,
+  activeBoth: r.active_both === 1,
   sideSince: r.side_since,
   createdAt: r.created_at,
   updatedAt: r.updated_at,
@@ -123,6 +126,7 @@ export type NewEntry = {
   leftSec?: number;
   rightSec?: number;
   activeSide?: Side | null;
+  activeBoth?: boolean;
   sideSince?: number | null;
 };
 
@@ -131,8 +135,8 @@ export async function createEntry(db: SQLiteDatabase, babyId: number, e: NewEntr
   const res = await db.runAsync(
     `INSERT INTO entry
        (baby_id, kind, started_at, ended_at, note, diaper_kind, feed_kind, amount_ml,
-        left_sec, right_sec, active_side, side_since, created_at, updated_at)
-     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+        left_sec, right_sec, active_side, active_both, side_since, created_at, updated_at)
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     babyId,
     e.kind,
     e.startedAt,
@@ -144,6 +148,7 @@ export async function createEntry(db: SQLiteDatabase, babyId: number, e: NewEntr
     e.leftSec ?? 0,
     e.rightSec ?? 0,
     e.activeSide ?? null,
+    e.activeBoth ? 1 : 0,
     e.sideSince ?? null,
     now,
     now,
@@ -162,6 +167,7 @@ export async function updateEntry(db: SQLiteDatabase, id: number, e: Partial<New
   if ('leftSec' in e) cols.left_sec = e.leftSec;
   if ('rightSec' in e) cols.right_sec = e.rightSec;
   if ('activeSide' in e) cols.active_side = e.activeSide;
+  if ('activeBoth' in e) cols.active_both = e.activeBoth ? 1 : 0;
   if ('sideSince' in e) cols.side_since = e.sideSince;
   cols.updated_at = Date.now();
 
@@ -238,7 +244,7 @@ export async function startSleep(db: SQLiteDatabase, babyId: number, at = Date.n
 export async function startNursing(
   db: SQLiteDatabase,
   babyId: number,
-  side: Side,
+  side: NursingSide,
   at = Date.now(),
 ) {
   return createEntry(db, babyId, {
@@ -246,7 +252,8 @@ export async function startNursing(
     feedKind: 'breast',
     startedAt: at,
     endedAt: null,
-    activeSide: side,
+    activeSide: side === 'both' ? null : side,
+    activeBoth: side === 'both',
     sideSince: at,
   });
 }
@@ -257,25 +264,34 @@ export async function startNursing(
  * switching sides or pausing.
  */
 function flush(entry: Entry, at: number) {
-  const delta = entry.activeSide && entry.sideSince ? Math.max(0, Math.round((at - entry.sideSince) / 1000)) : 0;
+  const running = entry.activeBoth || entry.activeSide !== null;
+  const delta =
+    running && entry.sideSince ? Math.max(0, Math.round((at - entry.sideSince) / 1000)) : 0;
+  // Tandem credits the same wall-clock seconds to both sides, because both
+  // breasts really were feeding for that whole time. The session's own length
+  // comes from `startedAt`, not from summing the two, so nothing double-counts.
   return {
-    leftSec: entry.leftSec + (entry.activeSide === 'left' ? delta : 0),
-    rightSec: entry.rightSec + (entry.activeSide === 'right' ? delta : 0),
+    leftSec: entry.leftSec + (entry.activeBoth || entry.activeSide === 'left' ? delta : 0),
+    rightSec: entry.rightSec + (entry.activeBoth || entry.activeSide === 'right' ? delta : 0),
   };
 }
+
+/** Whether a nursing session is currently counting, on any side. */
+export const isNursing = (e: Entry) => e.activeBoth || e.activeSide !== null;
 
 /** Switch sides, or pass the same side to pause it. */
 export async function setNursingSide(
   db: SQLiteDatabase,
   entry: Entry,
-  side: Side | null,
+  side: NursingSide | null,
   at = Date.now(),
 ) {
   const { leftSec, rightSec } = flush(entry, at);
   await updateEntry(db, entry.id, {
     leftSec,
     rightSec,
-    activeSide: side,
+    activeSide: side === 'both' ? null : side,
+    activeBoth: side === 'both',
     sideSince: side ? at : null,
   });
 }
@@ -291,18 +307,28 @@ export async function stopRunning(db: SQLiteDatabase, entry: Entry, at = Date.no
     leftSec,
     rightSec,
     activeSide: null,
+    activeBoth: false,
     sideSince: null,
   });
 }
 
 /** Live elapsed seconds for a running entry, including the un-flushed side. */
+/**
+ * How long the session has been going, as wall-clock time.
+ *
+ * Deliberately measured from `startedAt` rather than by summing the per-side
+ * accumulators. Summing is wrong in two directions: it under-reports a paused
+ * session (the baby unlatched but the feed is still happening) and it
+ * double-counts a tandem feed, where the same minute legitimately belongs to
+ * both sides. `leftSec` / `rightSec` remain the per-side detail.
+ */
 export function elapsedSec(entry: Entry, now: number) {
-  if (entry.kind === 'sleep') {
-    return Math.max(0, Math.round(((entry.endedAt ?? now) - entry.startedAt) / 1000));
-  }
-  const running =
-    entry.activeSide && entry.sideSince ? Math.max(0, Math.round((now - entry.sideSince) / 1000)) : 0;
-  return entry.leftSec + entry.rightSec + running;
+  return Math.max(0, Math.round(((entry.endedAt ?? now) - entry.startedAt) / 1000));
+}
+
+/** Per-side nursing seconds, including time not yet flushed. */
+export function sideSeconds(entry: Entry, now: number) {
+  return flush(entry, now);
 }
 
 /* --------------------------------------------------------------- growth */

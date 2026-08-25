@@ -6,7 +6,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { timings } from '@/design/motion';
-import { color, radius, shadow, space } from '@/design/tokens';
+import { HIT_TARGET, color, radius, shadow, space } from '@/design/tokens';
 import { Press } from './Press';
 import { Txt } from './Txt';
 
@@ -100,6 +100,7 @@ const styles = StyleSheet.create({
   },
   cell: {
     flex: 1,
+    minHeight: HIT_TARGET,
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: space.md,

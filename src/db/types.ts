@@ -6,6 +6,12 @@ export type DiaperKind = 'pee' | 'poop' | 'both';
 export type FeedKind = 'bottle' | 'breast' | 'solid';
 export type Side = 'left' | 'right';
 
+/**
+ * Which breast is being used. `both` is tandem feeding — twins, or a baby
+ * offered both at once — where time accrues to each side simultaneously.
+ */
+export type NursingSide = Side | 'both';
+
 export type Baby = {
   id: number;
   name: string;
@@ -33,6 +39,8 @@ export type Entry = {
   rightSec: number;
   /** Which side is currently running, and since when. Both null when paused. */
   activeSide: Side | null;
+  /** Tandem: both breasts at once. `activeSide` is null while this is set. */
+  activeBoth: boolean;
   sideSince: number | null;
 
   createdAt: number;

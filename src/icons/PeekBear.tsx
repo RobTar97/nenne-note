@@ -249,7 +249,14 @@ export function PeekBear({
   );
 
   return (
-    <View style={{ width, height }}>
+    // Decoration: a screen reader announcing "image" on every screen adds
+    // nothing and gets in the way of the data the user actually came for. The
+    // pressable variant opts back in below.
+    <View
+      style={{ width, height }}
+      accessibilityElementsHidden={!pressable}
+      importantForAccessibility={pressable ? 'auto' : 'no-hide-descendants'}
+    >
       {pressable && alive ? (
         <Pressable
           accessibilityRole="image"

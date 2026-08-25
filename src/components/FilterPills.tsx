@@ -6,7 +6,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { timings } from '@/design/motion';
-import { color, radius, space } from '@/design/tokens';
+import { HIT_TARGET, color, radius, space } from '@/design/tokens';
 import { Press } from './Press';
 import { Txt } from './Txt';
 
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 5,
     paddingHorizontal: 13,
-    minHeight: 44,
+    minHeight: HIT_TARGET,
     borderRadius: radius.pill,
     // The border is always present and only changes colour: toggling
     // `borderWidth` would resize the pill, and the indicator measures it.

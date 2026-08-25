@@ -41,6 +41,7 @@ async function entriesOverlapping(db: SQLiteDatabase, babyId: number, from: numb
       leftSec: r.left_sec,
       rightSec: r.right_sec,
       activeSide: r.active_side,
+      activeBoth: r.active_both === 1,
       sideSince: r.side_since,
       createdAt: r.created_at,
       updatedAt: r.updated_at,

@@ -28,8 +28,9 @@
 A parent uses this one-handed, in the dark, with a baby in the other arm. Every
 decision in the codebase serves that.
 
-- **No account, no network, no cloud.** Everything lives in a local SQLite
-  database. Nothing about a baby ever leaves the device.
+- **No account, no cloud.** Logging works offline and everything lives in a
+  local SQLite database. Nothing about a baby ever leaves the device; network
+  access only happens if you choose to open an optional support link.
 - **Two taps to log something.** Anything that adds a step to that is the wrong
   feature, however good it is.
 - **Japanese first**, English optional — both written natively, not translated.
@@ -45,13 +46,14 @@ i18n, haptics, local notifications, and a release build you can install.
 |---|---|
 | **Onboarding** | An animated welcome with three feature cards, then the baby's name and birthday. Runs once. |
 | **Home** | Greeting, age, the last diaper / feed / sleep, and quick-add. Shows a live timer in place of the last-event value while a session is running. |
-| **Quick log** | Diaper kind, bottle volume, nursing side, time, note. Doubles as the editor and as the live-session controls. |
+| **Quick log** | Diaper kind, bottle volume, nursing side (including both), time, note. Doubles as the editor and as the live-session controls. |
 | **Today** | A filterable timeline of the day. Tap a row to edit it. |
 | **Daily summary** | Per-category totals and a sleep ring. |
 | **Trends** | 7- and 30-day charts, plus the baby's own rhythm. |
 | **Growth** | Weight, height and head circumference over time. |
 | **Firsts** | A 16-item milestone checklist grouped by rough age band. |
 | **Settings** | Baby details, language, how you are addressed, haptics, reminders. |
+| **Support** | Optional links for supporting development; the app remains fully usable either way. |
 
 <p align="center">
   <img src="design/built/00-onboarding.png" width="19%" alt="Onboarding welcome">
@@ -60,6 +62,10 @@ i18n, haptics, local notifications, and a release build you can install.
   <img src="design/built/08-milestones.png" width="19%" alt="Milestones">
   <img src="design/built/06-settings.png" width="19%" alt="Settings">
 </p>
+
+Long screens use a quiet bottom overflow cue that fades as you read. After a
+meaningful scroll, a one-handed **Back to top** control appears at the edge of
+the screen. The cue and control respect the system's reduced-motion setting.
 
 ## Quick start
 
@@ -88,7 +94,7 @@ src/
   design/            tokens · type · motion · timeline   — the whole visual system
   icons/             hand-authored SVG line art + the PeekBear mascot
   components/        Txt, Press, Card, Segmented, FilterPills, Ring, BarChart, LineChart …
-  data/              the milestone catalogue
+  data/              milestone catalogue, age ranges, support links
   db/                schema (migrations) · repo (queries) · stats (derived) · live (hook)
   i18n/              ja.ts (primary) · en.ts · duration formatting
   notifications/     reminder scheduling
@@ -101,8 +107,9 @@ src/
 - **Diaper** — an instant: pee, poop or both.
 - **Bottle** — an instant with a volume in ml, entered on a stepper with presets
   so it can be driven one-handed and cannot produce an invalid number.
-- **Nursing** — a live session. Start it, switch sides, stop it. Time accrues
-  per side and is flushed on every switch, so it cannot be lost.
+- **Nursing** — a live session. Start it, switch sides, select both, or pause;
+  stop it when finished. Time accrues per side and is flushed on every switch,
+  so it cannot be lost.
 - **Sleep** — a live session with a single start and stop.
 
 A running session is just an `entry` row with `ended_at IS NULL`, so it survives
@@ -147,6 +154,10 @@ broken chart.
 clinical data, and shipping an approximation of them in an app a new parent
 reads at 3am would be worse than shipping nothing. The screen says so and points
 at a paediatrician.
+
+The daily summary can show broad age-based feeding, sleep and wet-nappy ranges
+for orientation. They are always presented as ranges with a healthcare
+disclaimer, never as a target or a comparison against the baby.
 
 Milestone age bands are headings only — nothing is ever shown as "due" or
 "late". A parent measuring their child against a schedule is precisely the
@@ -286,9 +297,8 @@ config plugins, never in the generated files.
 > [!WARNING]
 > `release` is signed with the **debug keystore** (the React Native template
 > default). Fine for a test install, not fine for the Play Store — generate a
-> real upload key first. The build also inherits
-> `android.permission.SYSTEM_ALERT_WINDOW` from a dependency; block it with
-> `android.blockedPermissions` in `app.json` before publishing.
+> real upload key first. The manifest explicitly blocks the unnecessary
+> `android.permission.SYSTEM_ALERT_WINDOW` permission.
 
 ### EAS, for distribution
 
@@ -306,8 +316,8 @@ eas update --branch production -m "..."             # JS-only, no store review
 
 Working and installable. Known gaps, all deliberate or flagged:
 
-- **The app icon and splash are still the Expo template.** The top item before
-  anyone else sees a build.
+- The launcher icon, Android adaptive icon, themed icon and splash use the
+  generated monochrome bear mark.
 - No growth percentile curves (see above).
 - One baby, one device. The schema keeps a `baby` table with a foreign key from
   every row, so twins or a second child can be added without a migration.
@@ -338,8 +348,12 @@ Security issues go through [SECURITY.md](SECURITY.md), never a public issue.
 - **Zen Maru Gothic** — [SIL Open Font License 1.1](https://openfontlicense.org/),
   via [`@expo-google-fonts`](https://github.com/expo/google-fonts). Bundled at
   three weights.
-- All icons and the mascot are original work for this project, drawn as SVG
-  paths — no icon set is vendored.
+- UI icons and the mascot are original work for this project, drawn as SVG
+  paths — no third-party icon set is vendored.
+- The launcher, adaptive, themed and splash PNGs are project-specific
+  monochrome bear assets generated for this project. The source output is
+  `assets/launcher-bear-generated.png`; the wired variants are the `*-v2.png`
+  files referenced by `app.json`.
 - The four images in `design/screens/` are the original design mockups this app
   was built from.
 

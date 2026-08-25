@@ -52,7 +52,7 @@ export function Header({
   return (
     <View style={styles.header}>
       <View pointerEvents="none" style={styles.titleWrap}>
-        <Txt variant="title" center numberOfLines={1}>
+        <Txt variant="title" center numberOfLines={1} accessibilityRole="header">
           {title}
         </Txt>
         {subtitle ? (

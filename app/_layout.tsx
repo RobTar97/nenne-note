@@ -118,6 +118,7 @@ function Boot() {
       <Stack.Screen name="settings" />
       <Stack.Screen name="growth" />
       <Stack.Screen name="milestones" />
+      <Stack.Screen name="support" />
       <Stack.Screen name="growth-log" options={{ presentation: 'modal' }} />
       {/* A log is a task, not a place: it presents over the app and dismisses
           back the way it came, which is what makes swipe-to-close feel right. */}

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSQLiteContext } from 'expo-sqlite';
 import Animated, {
   useAnimatedStyle,
   useReducedMotion,
@@ -11,6 +12,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { Screen, Header, SCREEN_PADDING } from '@/components/Screen';
+import { LongScroll } from '@/components/LongScroll';
 import { Txt } from '@/components/Txt';
 import { Press } from '@/components/Press';
 import { CardStat, LastCard } from '@/components/LastCard';
@@ -25,12 +27,13 @@ import {
   HeartIcon,
   PoopIcon,
   SleepIcon,
+  StopIcon,
 } from '@/icons';
 import { color, radius, space } from '@/design/tokens';
 import { spring, timings } from '@/design/motion';
 import { useApp } from '@/store/app';
 import { useLive } from '@/db/live';
-import { elapsedSec, lastEntry, runningEntry } from '@/db/repo';
+import { elapsedSec, lastEntry, runningEntry, stopRunning } from '@/db/repo';
 import type { Entry } from '@/db/types';
 import { ageInDays, formatClock } from '@/utils/time';
 import { formatDuration } from '@/i18n';
@@ -48,7 +51,8 @@ const EMPTY: HomeData = { pee: null, poop: null, feed: null, sleep: null, runnin
 
 export default function Home() {
   const router = useRouter();
-  const { t, lang, baby, settings, haptic, celebration } = useApp();
+  const db = useSQLiteContext();
+  const { t, lang, baby, settings, haptic, celebration, celebrate } = useApp();
 
   const babyId = baby?.id ?? 0;
   const { data } = useLive<HomeData>(
@@ -71,6 +75,11 @@ export default function Home() {
   if (!baby) return <Screen />;
 
   const days = ageInDays(baby.birthday);
+  // Nothing logged yet, ever. Used for a single in-place hint above the
+  // quick-add row rather than a tutorial wall — and it disappears by itself the
+  // moment the first log lands, so there is nothing to dismiss.
+  const isNew =
+    !data.pee && !data.poop && !data.feed && !data.sleep && !data.running;
   const who = t.caregiver[settings.caregiver];
   const greeting = greetingFor(new Date().getHours(), t);
 
@@ -78,6 +87,20 @@ export default function Home() {
   const goSettings = () => router.push('/settings');
   const goToday = (filter?: string) =>
     router.push(filter ? { pathname: '/today', params: { filter } } : '/today');
+  /**
+   * Stopping a timer from the card it appears on.
+   *
+   * Previously the only way to stop was to open the quick-log modal and find
+   * the button there — three taps to end a nap, while holding a baby. The
+   * running card is where the parent is already looking.
+   */
+  const stop = async () => {
+    if (!data.running) return;
+    await stopRunning(db, data.running);
+    haptic.commit();
+    celebrate();
+  };
+
   const quickLog = (kind: 'diaper' | 'feed' | 'sleep') => {
     haptic.tap();
     router.push({ pathname: '/log', params: { kind } });
@@ -91,9 +114,9 @@ export default function Home() {
         right={{ icon: <GearIcon size={26} />, onPress: goSettings, label: t.a11y.settings }}
       />
 
-      <ScrollView
+      <LongScroll
+        backToTopLabel={t.common.backToTop}
         contentContainerStyle={styles.scroll}
-        showsVerticalScrollIndicator={false}
         // The bear should not be nailed to the top of a bouncing scroll view.
         contentInsetAdjustmentBehavior="never"
       >
@@ -143,10 +166,10 @@ export default function Home() {
             title={t.home.lastFeed}
             accessibilityLabel={t.home.lastFeed}
             icon={<BottleIcon size={44} />}
-            onPress={() => goToday('feed')}
+            onPress={() => (data.running?.kind === 'feed' ? router.push('/log') : goToday('feed'))}
           >
             {data.running?.kind === 'feed' ? (
-              <RunningRow entry={data.running} label={t.home.nursing} />
+              <RunningRow entry={data.running} label={t.home.nursing} onStop={stop} />
             ) : data.feed ? (
               <>
                 <Txt variant="metric">{formatClock(data.feed.startedAt)}</Txt>
@@ -161,10 +184,10 @@ export default function Home() {
             title={t.home.lastSleep}
             accessibilityLabel={t.home.lastSleep}
             icon={<SleepIcon size={46} />}
-            onPress={() => goToday('sleep')}
+            onPress={() => (data.running?.kind === 'sleep' ? router.push('/log') : goToday('sleep'))}
           >
             {data.running?.kind === 'sleep' ? (
-              <RunningRow entry={data.running} label={t.home.sleeping} />
+              <RunningRow entry={data.running} label={t.home.sleeping} onStop={stop} />
             ) : data.sleep ? (
               <>
                 <Txt variant="metric">{formatClock(data.sleep.startedAt)}</Txt>
@@ -192,6 +215,12 @@ export default function Home() {
           <HeartIcon size={13} color={color.inkFaint} />
         </View>
 
+        {isNew ? (
+          <Txt variant="caption" center style={styles.firstHint}>
+            {t.home.firstHint}
+          </Txt>
+        ) : null}
+
         <View style={styles.quickRow}>
           <QuickAdd
             label={t.kind.diaper}
@@ -212,7 +241,7 @@ export default function Home() {
             a11y={t.a11y.quickLog(t.kind.sleep)}
           />
         </View>
-      </ScrollView>
+      </LongScroll>
     </Screen>
   );
 }
@@ -239,12 +268,37 @@ function feedDetail(e: Entry, t: ReturnType<typeof useApp>['t'], lang: 'ja' | 'e
 }
 
 /** A live session shown in place of the last-event value. */
-function RunningRow({ entry, label }: { entry: Entry; label: string }) {
+function RunningRow({
+  entry,
+  label,
+  onStop,
+}: {
+  entry: Entry;
+  label: string;
+  onStop: () => void;
+}) {
+  const { t } = useApp();
   const now = useTicker(1000);
   return (
-    <View>
-      <Txt variant="metric">{stopwatch(elapsedSec(entry, now))}</Txt>
-      <Txt variant="support">{label}</Txt>
+    <View style={styles.runningRow}>
+      <View style={styles.runningText}>
+        <Txt variant="metric" style={styles.tabular}>
+          {stopwatch(elapsedSec(entry, now))}
+        </Txt>
+        <Txt variant="support">{label}</Txt>
+      </View>
+      <Press
+        onPress={onStop}
+        accessibilityRole="button"
+        accessibilityLabel={`${label} — ${t.home.stop}`}
+        style={styles.stopBtn}
+        scale={0.94}
+      >
+        <StopIcon size={15} color={color.onFill} />
+        <Txt variant="caption" color={color.onFill}>
+          {t.home.stop}
+        </Txt>
+      </Press>
     </View>
   );
 }
@@ -342,6 +396,27 @@ const styles = StyleSheet.create({
   cards: {
     gap: space.md,
   },
+  runningRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: space.md,
+  },
+  runningText: {
+    flexShrink: 1,
+  },
+  tabular: {
+    fontVariant: ['tabular-nums'],
+  },
+  stopBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: space.md,
+    minHeight: 40,
+    borderRadius: radius.pill,
+    backgroundColor: color.fill,
+  },
   split: {
     flexDirection: 'row',
     alignItems: 'stretch',
@@ -359,6 +434,10 @@ const styles = StyleSheet.create({
   },
   quickRule: {
     flex: 1,
+  },
+  firstHint: {
+    marginBottom: space.md,
+    marginTop: -space.sm,
   },
   quickRow: {
     flexDirection: 'row',

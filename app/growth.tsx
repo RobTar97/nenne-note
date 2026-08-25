@@ -1,11 +1,12 @@
 import React, { useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { format } from 'date-fns';
 import { ja as jaLocale, enUS } from 'date-fns/locale';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Screen, Header, SCREEN_PADDING } from '@/components/Screen';
+import { LongScroll } from '@/components/LongScroll';
 import { Txt } from '@/components/Txt';
 import { Card, CardPress, DashedRule } from '@/components/Surface';
 import { FilterPills } from '@/components/FilterPills';
@@ -91,7 +92,7 @@ export default function GrowthScreen() {
         <FilterPills options={options} value={metric} onChange={setMetric} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+      <LongScroll backToTopLabel={t.common.backToTop} contentContainerStyle={styles.scroll}>
         {rows.length === 0 ? (
           <View style={styles.empty}>
             <PeekBear width={148} eyes="awake" hearts={false} color={color.inkFaint} />
@@ -134,7 +135,11 @@ export default function GrowthScreen() {
                   dot and a min that equals its max reads as a broken chart. */}
               {series.length > 1 ? (
                 <View style={styles.chart}>
-                  <LineChart points={series} formatValue={fmt} />
+                  <LineChart
+                    points={series}
+                    formatValue={fmt}
+                    label={`${options.find((o) => o.value === metric)?.label}: ${series.length} — ${fmt(series[0].y)} → ${fmt(latest!.y)}`}
+                  />
                 </View>
               ) : null}
             </Card>
@@ -163,7 +168,7 @@ export default function GrowthScreen() {
             </Txt>
           </>
         )}
-      </ScrollView>
+      </LongScroll>
 
       <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, space.base) }]}>
         <PrimaryButton

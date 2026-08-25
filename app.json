@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "scheme": "nennenote",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon-v2.png",
     "userInterfaceStyle": "light",
     "backgroundColor": "#F4F4F4",
     "ios": {
@@ -18,11 +18,12 @@
     "android": {
       "package": "com.nennenote.app",
       "predictiveBackGestureEnabled": false,
+      "blockedPermissions": ["android.permission.SYSTEM_ALERT_WINDOW"],
       "adaptiveIcon": {
         "backgroundColor": "#F4F4F4",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "foregroundImage": "./assets/android-icon-foreground-v2.png",
+        "backgroundImage": "./assets/android-icon-background-v2.png",
+        "monochromeImage": "./assets/android-icon-monochrome-v2.png"
       }
     },
     "web": {
@@ -36,7 +37,7 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#F4F4F4",
-          "image": "./assets/splash-icon.png",
+          "image": "./assets/splash-icon-v2.png",
           "imageWidth": 160
         }
       ],

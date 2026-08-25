@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -12,6 +12,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { Screen, Header, SCREEN_PADDING } from '@/components/Screen';
+import { LongScroll } from '@/components/LongScroll';
 import { Txt } from '@/components/Txt';
 import { Press } from '@/components/Press';
 import { Card } from '@/components/Surface';
@@ -81,7 +82,7 @@ export default function Milestones() {
         left={{ icon: <ChevronLeftIcon size={24} />, onPress: () => router.back(), label: t.common.back }}
       />
 
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+      <LongScroll backToTopLabel={t.common.backToTop} contentContainerStyle={styles.scroll}>
         <View style={styles.hero}>
           <PeekBear width={148} eyes={achieved.size > 0 ? 'happy' : 'awake'} alive celebration={achieved.size} pressable />
           <Txt variant="caption" center style={styles.hint}>
@@ -115,7 +116,7 @@ export default function Milestones() {
             </View>
           );
         })}
-      </ScrollView>
+      </LongScroll>
 
       {picking && pickingAt != null ? (
         <DateTimePicker

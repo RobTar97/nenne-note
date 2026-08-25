@@ -24,6 +24,7 @@ export const ja = {
     stop: 'おわり',
     pause: '一時停止',
     resume: 'さいかい',
+    backToTop: '上にもどる',
   },
 
   kind: {
@@ -44,9 +45,35 @@ export const ja = {
     solid: 'りにゅう食',
     left: '左',
     right: '右',
+    both: '両方',
+    bothHint: '同時に授乳',
     amount: 'りょう',
     side: 'どちら',
     nursing: '授乳中',
+  },
+
+  guidance: {
+    forAge: (band: string) => `${band}のめやす`,
+    feeds: (r: string) => `授乳 1日${r}回`,
+    gap: (r: string) => `${r}時間おき`,
+    sleep: (r: string) => `ねんね 1日${r}時間`,
+    wet: (r: string) => `おしっこ 1日${r}回`,
+    withSolids: 'りにゅう食もはじまるころ',
+    disclaimer:
+      'あくまで一般的なめやすです。赤ちゃんによって大きくちがいます。心配なことは小児科でご相談ください。',
+    whatIsThis: 'めやすについて',
+  },
+
+  support: {
+    title: 'つくった人を応援',
+    row: '開発を応援する',
+    lead: 'ねんねノートは無料で、広告もなく、記録が端末の外に出ることもありません。',
+    body: 'もし気に入ってもらえたら、応援していただけるとうれしいです。応援しなくても、機能はぜんぶ使えます。',
+    kofi: 'Ko-fi',
+    github: 'GitHub Sponsors',
+    bmc: 'Buy Me a Coffee',
+    openFail: 'リンクをひらけませんでした',
+    thanks: 'ありがとうございます',
   },
 
   greeting: {
@@ -74,6 +101,9 @@ export const ja = {
     sleeping: 'ねんね中',
     nursing: '授乳中',
     tapToStop: 'タップしておわり',
+    stop: 'おわり',
+    firstHint: 'ここから記録できます',
+    firstHintGot: 'わかった',
   },
 
   log: {
@@ -202,12 +232,14 @@ export const ja = {
     step: (n: number, total: number) => `${n} / ${total}`,
     cards: {
       diaperTitle: 'おむつ',
-      diaperBody: 'おしっこも うんちも ワンタップ',
+      diaperBody: 'おしっこ・うんち・両方を ワンタップで',
       feedTitle: '授乳',
-      feedBody: 'ミルクの量も 母乳の時間も',
+      feedBody: 'ミルクは量を、母乳は左右のタイマーで',
       sleepTitle: 'ねんね',
-      sleepBody: 'タイマーで ねむった時間を記録',
+      sleepBody: 'はじめるを押すだけで自動で計測',
     },
+    privacy: '記録はこの端末だけに保存されます',
+    privacyBody: 'アカウントも通信もありません',
   },
 
   units: {

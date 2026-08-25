@@ -324,6 +324,29 @@ export function TrashIcon(props: IconProps) {
   );
 }
 
+/** A closed padlock — used only for the "stays on this device" reassurance. */
+export function LockIcon(props: IconProps) {
+  const { size, color, strokeWidth } = resolve(props);
+  return (
+    <Frame size={size} color={color} strokeWidth={strokeWidth}>
+      <Path d="M7.4 10.4V7.8a4.6 4.6 0 0 1 9.2 0v2.6" />
+      <Path d="M6.4 10.4h11.2a1.6 1.6 0 0 1 1.6 1.6v7a1.6 1.6 0 0 1-1.6 1.6H6.4a1.6 1.6 0 0 1-1.6-1.6v-7a1.6 1.6 0 0 1 1.6-1.6Z" />
+      <Circle cx="12" cy="15.5" r="1.15" fill={color} strokeWidth={0} />
+    </Frame>
+  );
+}
+
+export function InfoIcon(props: IconProps) {
+  const { size, color, strokeWidth } = resolve(props);
+  return (
+    <Frame size={size} color={color} strokeWidth={strokeWidth}>
+      <Circle cx="12" cy="12" r="8.4" />
+      <Path d="M12 11.4v5" />
+      <Circle cx="12" cy="7.9" r="0.95" fill={color} strokeWidth={0} />
+    </Frame>
+  );
+}
+
 export function GlobeIcon(props: IconProps) {
   const { size, color, strokeWidth } = resolve(props);
   return (

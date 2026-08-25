@@ -24,10 +24,11 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   DiaperIcon,
+  LockIcon,
   SleepIcon,
   SparkHeartIcon,
 } from '@/icons';
-import { color, radius, shadow, space } from '@/design/tokens';
+import { HIT_TARGET, color, hitSlop as makeHitSlop, radius, shadow, space } from '@/design/tokens';
 import { text } from '@/design/type';
 import { duration, ease } from '@/design/motion';
 import { useTimeline } from '@/design/timeline';
@@ -95,6 +96,7 @@ export default function Onboarding() {
           setStep(0);
         }}
         lang={lang}
+        backLabel={t.common.back}
         onLang={(l) => {
           haptic.select();
           update('language', l);
@@ -104,7 +106,7 @@ export default function Onboarding() {
 
       <KeyboardAvoidingView
         style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={insets.top}
       >
         <StepFrame step={step}>
@@ -112,8 +114,9 @@ export default function Onboarding() {
             <WelcomeStep />
           ) : (
             <ScrollView
-              contentContainerStyle={styles.scroll}
+              contentContainerStyle={[styles.scroll, styles.setupScroll]}
               keyboardShouldPersistTaps="handled"
+              keyboardDismissMode="on-drag"
               showsVerticalScrollIndicator={false}
             >
               <Txt variant="title" center style={styles.setupTitle}>
@@ -270,6 +273,18 @@ function WelcomeStep() {
           </Rise>
         ))}
       </View>
+
+      {/* The single most reassuring thing this app can say to a new parent,
+          so it is on the first screen rather than buried in a policy. */}
+      <Rise clock={clock} from={T.cta[0]} to={T.cta[1]} style={styles.privacy}>
+        <View style={styles.privacyRow}>
+          <LockIcon size={15} color={color.inkMuted} />
+          <Txt variant="caption">{t.onboarding.privacy}</Txt>
+        </View>
+        <Txt variant="caption" center color={color.inkFaint}>
+          {t.onboarding.privacyBody}
+        </Txt>
+      </Rise>
     </ScrollView>
   );
 }
@@ -280,12 +295,14 @@ function Header({
   step,
   onBack,
   lang,
+  backLabel,
   onLang,
   stepLabel,
 }: {
   step: 0 | 1;
   onBack: () => void;
   lang: 'ja' | 'en';
+  backLabel: string;
   onLang: (l: 'ja' | 'en') => void;
   stepLabel: string;
 }) {
@@ -293,34 +310,44 @@ function Header({
     <View style={styles.header}>
       <View style={styles.headerSide}>
         {step > 0 ? (
-          <Press onPress={onBack} accessibilityLabel="back" style={styles.round}>
+          <Press
+            onPress={onBack}
+            accessibilityLabel={backLabel}
+            hitSlop={makeHitSlop(40)}
+            style={styles.round}
+          >
             <ChevronLeftIcon size={20} />
           </Press>
         ) : null}
       </View>
 
-      <Txt variant="caption">{stepLabel}</Txt>
+      <Txt
+        variant="caption"
+        accessibilityRole="progressbar"
+        accessibilityValue={{ min: 1, max: 2, now: step + 1, text: stepLabel }}
+      >
+        {stepLabel}
+      </Txt>
 
       <View style={[styles.headerSide, styles.headerRight]}>
-        {step === 0
-          ? (['ja', 'en'] as const).map((l) => {
-              const on = lang === l;
-              return (
-                <Press
-                  key={l}
-                  onPress={() => onLang(l)}
-                  accessibilityState={{ selected: on }}
-                  accessibilityLabel={l === 'ja' ? '日本語' : 'English'}
-                  scale={0.94}
-                  style={[styles.lang, on ? styles.langOn : null]}
-                >
-                  <Txt variant="caption" color={on ? color.onFill : color.inkMuted}>
-                    {l === 'ja' ? '日本語' : 'EN'}
-                  </Txt>
-                </Press>
-              );
-            })
-          : null}
+        {(['ja', 'en'] as const).map((l) => {
+          const on = lang === l;
+          return (
+            <Press
+              key={l}
+              onPress={() => onLang(l)}
+              accessibilityState={{ selected: on }}
+              accessibilityLabel={l === 'ja' ? '日本語' : 'English'}
+              hitSlop={makeHitSlop(32)}
+              scale={0.94}
+              style={[styles.lang, on ? styles.langOn : null]}
+            >
+              <Txt variant="caption" color={on ? color.onFill : color.inkMuted}>
+                {l === 'ja' ? '日本語' : 'EN'}
+              </Txt>
+            </Press>
+          );
+        })}
       </View>
     </View>
   );
@@ -392,6 +419,9 @@ const styles = StyleSheet.create({
     paddingBottom: space.xl,
     alignItems: 'center',
   },
+  setupScroll: {
+    paddingBottom: space.xxxl,
+  },
   welcome: {
     marginTop: space.base,
   },
@@ -402,6 +432,17 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     marginTop: space.xl,
     gap: space.md,
+  },
+  privacy: {
+    alignSelf: 'stretch',
+    alignItems: 'center',
+    marginTop: space.xl,
+    gap: 2,
+  },
+  privacyRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
   },
   cardWrap: {
     alignSelf: 'stretch',
@@ -432,6 +473,7 @@ const styles = StyleSheet.create({
   },
   nameInput: {
     alignSelf: 'stretch',
+    minHeight: HIT_TARGET,
     borderBottomWidth: 1.6,
     borderBottomColor: color.hairline,
     paddingBottom: space.sm,

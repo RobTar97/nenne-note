@@ -37,12 +37,13 @@ import {
   getEntry,
   runningEntry,
   setNursingSide,
+  sideSeconds,
   startNursing,
   startSleep,
   stopRunning,
   updateEntry,
 } from '@/db/repo';
-import type { DiaperKind, Entry, EntryKind, Side } from '@/db/types';
+import type { DiaperKind, Entry, EntryKind, NursingSide } from '@/db/types';
 import { useTicker } from '@/utils/useTicker';
 import { formatDuration } from '@/i18n';
 
@@ -90,7 +91,7 @@ export default function LogScreen() {
   );
   const [diaperKind, setDiaperKind] = useState<DiaperKind>('pee');
   const [feedMode, setFeedMode] = useState<FeedMode>('bottle');
-  const [side, setSide] = useState<Side>('left');
+  const [side, setSide] = useState<NursingSide>('left');
   const [amount, setAmount] = useState(120);
   const [when, setWhen] = useState(() => Date.now());
   const [note, setNote] = useState('');
@@ -310,7 +311,7 @@ export default function LogScreen() {
               {kind === 'feed' && feedMode === 'breast' && !editing ? (
                 <>
                   <FieldLabel>{t.feed.side}</FieldLabel>
-                  <View style={styles.duo}>
+                  <View style={styles.choices}>
                     <ChoiceCard
                       label={t.feed.left}
                       icon={<SideMark side="left" />}
@@ -323,6 +324,13 @@ export default function LogScreen() {
                       icon={<SideMark side="right" />}
                       selected={side === 'right'}
                       onPress={() => setSide('right')}
+                      onHaptic={haptic.select}
+                    />
+                    <ChoiceCard
+                      label={t.feed.both}
+                      icon={<SideMark side="both" />}
+                      selected={side === 'both'}
+                      onPress={() => setSide('both')}
                       onHaptic={haptic.select}
                     />
                   </View>
@@ -385,8 +393,21 @@ function RoundIcon({ children }: { children: React.ReactNode }) {
   return <View style={styles.round}>{children}</View>;
 }
 
-/** A left/right mark for the nursing side, drawn from the type scale. */
-function SideMark({ side }: { side: Side }) {
+/**
+ * The nursing side, as a mark rather than a word.
+ *
+ * A dot sitting left, right, or one on each side — which reads at a glance in
+ * the dark, where "left" and "right" both just look like short words.
+ */
+function SideMark({ side }: { side: NursingSide }) {
+  if (side === 'both') {
+    return (
+      <View style={[styles.sideMark, styles.sideMarkBoth]}>
+        <View style={styles.sideDot} />
+        <View style={styles.sideDot} />
+      </View>
+    );
+  }
   return (
     <View style={[styles.sideMark, side === 'right' ? styles.sideMarkRight : null]}>
       <View style={styles.sideDot} />
@@ -406,6 +427,7 @@ function LiveSession({ entry }: { entry: Entry }) {
   const { t, lang, haptic } = useApp();
   const now = useTicker(1000);
   const seconds = elapsedSec(entry, now);
+  const live = sideSeconds(entry, now);
 
   return (
     <View style={styles.live}>
@@ -418,26 +440,38 @@ function LiveSession({ entry }: { entry: Entry }) {
 
       {entry.kind === 'feed' ? (
         <View style={styles.liveSides}>
-          {(['left', 'right'] as const).map((s) => {
-            const active = entry.activeSide === s;
-            const accrued = s === 'left' ? entry.leftSec : entry.rightSec;
+          {(['left', 'both', 'right'] as const).map((s) => {
+            const active =
+              s === 'both' ? entry.activeBoth : !entry.activeBoth && entry.activeSide === s;
+            // Per-side seconds including the stretch not yet written to the
+            // database, so the numbers tick up live rather than only on switch.
+            const accrued =
+              s === 'both'
+                ? null
+                : s === 'left'
+                  ? live.leftSec
+                  : live.rightSec;
+            const label = s === 'left' ? t.feed.left : s === 'right' ? t.feed.right : t.feed.both;
             return (
               <Press
                 key={s}
                 onPress={() => {
                   haptic.select();
+                  // Tapping the active control pauses; the session stays open.
                   setNursingSide(db, entry, active ? null : s);
                 }}
+                accessibilityRole="button"
                 accessibilityState={{ selected: active }}
-                accessibilityLabel={s === 'left' ? t.feed.left : t.feed.right}
+                accessibilityLabel={label}
+                accessibilityHint={active ? t.common.pause : t.feed.bothHint}
                 style={[styles.sideBtn, active ? styles.sideBtnOn : null]}
                 scale={0.95}
               >
                 <Txt variant="label" color={active ? color.onFill : color.ink}>
-                  {s === 'left' ? t.feed.left : t.feed.right}
+                  {label}
                 </Txt>
                 <Txt variant="caption" color={active ? color.onFill : color.inkMuted}>
-                  {formatDuration(accrued, lang, t)}
+                  {accrued === null ? t.feed.bothHint : formatDuration(accrued, lang, t)}
                 </Txt>
               </Press>
             );
@@ -536,6 +570,11 @@ const styles = StyleSheet.create({
   },
   sideMarkRight: {
     alignItems: 'flex-end',
+  },
+  sideMarkBoth: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   sideDot: {
     width: 10,

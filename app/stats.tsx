@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { format } from 'date-fns';
 import { ja as jaLocale, enUS } from 'date-fns/locale';
 
 import { Screen, Header, SCREEN_PADDING } from '@/components/Screen';
+import { LongScroll } from '@/components/LongScroll';
 import { Txt } from '@/components/Txt';
 import { Press } from '@/components/Press';
 import { Card, DashedRule } from '@/components/Surface';
@@ -106,7 +107,7 @@ export default function Stats() {
         left={{ icon: <ChevronLeftIcon size={24} />, onPress: () => router.back(), label: t.common.back }}
       />
 
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+      <LongScroll backToTopLabel={t.common.backToTop} contentContainerStyle={styles.scroll}>
         <View style={styles.ranges}>
           {([7, 30] as const).map((d) => {
             const on = d === days;
@@ -165,7 +166,7 @@ export default function Stats() {
             <BarChart bars={c.bars} formatValue={(v) => `${v}${c.unit}`} />
           </Card>
         ))}
-      </ScrollView>
+      </LongScroll>
     </Screen>
   );
 }

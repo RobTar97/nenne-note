@@ -30,11 +30,14 @@ export function LineChart({
   points,
   height = 168,
   formatValue,
+  label,
 }: {
   /** Oldest first. `x` is a timestamp, `y` the measured value. */
   points: Point[];
   height?: number;
   formatValue: (v: number) => string;
+  /** Spoken summary; a plotted line is otherwise silent to a screen reader. */
+  label?: string;
 }) {
   const [width, setWidth] = useState(0);
   const onLayout = (e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width);
@@ -109,7 +112,13 @@ export function LineChart({
         <Txt variant="caption">{geometry ? formatValue(geometry.max) : ''}</Txt>
       </View>
 
-      <View style={{ height }} onLayout={onLayout}>
+      <View
+        style={{ height }}
+        onLayout={onLayout}
+        accessible
+        accessibilityRole="image"
+        accessibilityLabel={label}
+      >
         {geometry && width > 0 ? (
           <Svg width={width} height={height}>
             {points.length > 1 ? (

@@ -19,6 +19,7 @@ export const en: Dictionary = {
     stop: 'Stop',
     pause: 'Pause',
     resume: 'Resume',
+    backToTop: 'Back to top',
   },
 
   kind: {
@@ -39,9 +40,35 @@ export const en: Dictionary = {
     solid: 'Solids',
     left: 'Left',
     right: 'Right',
+    both: 'Both',
+    bothHint: 'Both at once',
     amount: 'Amount',
     side: 'Side',
     nursing: 'Nursing',
+  },
+
+  guidance: {
+    forAge: (band: string) => `Typical for ${band.toLowerCase()}`,
+    feeds: (r: string) => `${r} feeds a day`,
+    gap: (r: string) => `every ${r} hours`,
+    sleep: (r: string) => `${r} hours sleep a day`,
+    wet: (r: string) => `${r} wet nappies a day`,
+    withSolids: 'solids usually start around now',
+    disclaimer:
+      'These are general ranges only. Every baby is different. Talk to your paediatrician about anything that worries you.',
+    whatIsThis: 'About these ranges',
+  },
+
+  support: {
+    title: 'Support the maker',
+    row: 'Support development',
+    lead: 'Nenne Note is free, has no ads, and never sends your logs off the device.',
+    body: 'If it has been useful, a little support means a lot. Every feature stays available either way.',
+    kofi: 'Ko-fi',
+    github: 'GitHub Sponsors',
+    bmc: 'Buy Me a Coffee',
+    openFail: 'Could not open the link',
+    thanks: 'Thank you',
   },
 
   greeting: {
@@ -70,6 +97,9 @@ export const en: Dictionary = {
     sleeping: 'Sleeping',
     nursing: 'Nursing',
     tapToStop: 'Tap to stop',
+    stop: 'Stop',
+    firstHint: 'Log anything from here',
+    firstHintGot: 'Got it',
   },
 
   log: {
@@ -199,12 +229,14 @@ export const en: Dictionary = {
     step: (n: number, total: number) => `${n} / ${total}`,
     cards: {
       diaperTitle: 'Diapers',
-      diaperBody: 'Pee and poop in a single tap',
+      diaperBody: 'Pee, poop or both — in a single tap',
       feedTitle: 'Feeding',
-      feedBody: 'Bottle volume, or time on each side',
+      feedBody: 'Bottle volume, or a timer for each side',
       sleepTitle: 'Sleep',
-      sleepBody: 'A timer that records the whole nap',
+      sleepBody: 'Press start; it times the whole nap for you',
     },
+    privacy: 'Everything stays on this device',
+    privacyBody: 'No account, no network',
   },
 
   units: {

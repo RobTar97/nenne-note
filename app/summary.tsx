@@ -1,12 +1,14 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import { Screen, Header, SCREEN_PADDING } from '@/components/Screen';
+import { LongScroll } from '@/components/LongScroll';
 import { Txt } from '@/components/Txt';
 import { CardStat, LastCard } from '@/components/LastCard';
 import { VRule } from '@/components/Surface';
 import { Ring } from '@/components/Ring';
+import { Guidance } from '@/components/Guidance';
 import { PeekBear } from '@/icons/PeekBear';
 import {
   BottleIcon,
@@ -22,7 +24,8 @@ import { color, space } from '@/design/tokens';
 import { useApp } from '@/store/app';
 import { useLive } from '@/db/live';
 import { daySummary, type DaySummary } from '@/db/stats';
-import { formatClock } from '@/utils/time';
+import { ageInDays, formatClock } from '@/utils/time';
+import { bandFor, range, rangeEn, sleepRingTargetSec } from '@/data/feeding';
 import { durationParts } from '@/i18n';
 
 const EMPTY: DaySummary = {
@@ -41,9 +44,6 @@ const EMPTY: DaySummary = {
   lastSleepSec: null,
 };
 
-/** A full day of sleep is never 24h; 16h is a healthy newborn's day. */
-const SLEEP_TARGET_SEC = 16 * 3600;
-
 export default function Summary() {
   const router = useRouter();
   const { t, lang, baby } = useApp();
@@ -61,6 +61,13 @@ export default function Summary() {
   const anything = s.diaperTotal > 0 || s.feeds > 0 || s.sleepSec > 0;
   const sleep = durationParts(s.sleepSec, lang, t);
 
+  // The ring fills to the top of this baby's age band rather than a fixed 16
+  // hours, so a one-year-old sleeping twelve hours reads as a full night
+  // instead of a ring three-quarters empty.
+  const ageDays = ageInDays(baby.birthday);
+  const band = bandFor(ageDays);
+  const r = lang === 'ja' ? range : rangeEn;
+
   const goStats = (focus: string) => router.push({ pathname: '/stats', params: { focus } });
 
   return (
@@ -72,7 +79,7 @@ export default function Summary() {
         right={{ icon: <GearIcon size={26} />, onPress: () => router.push('/settings'), label: t.a11y.settings }}
       />
 
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+      <LongScroll backToTopLabel={t.common.backToTop} contentContainerStyle={styles.scroll}>
         <View style={styles.bear}>
           <PeekBear width={172} eyes="awake" />
         </View>
@@ -137,7 +144,11 @@ export default function Summary() {
                 <Txt variant="caption" numberOfLines={1} style={styles.sleepLabel}>
                   {t.summary.totalSleep}
                 </Txt>
-                <Ring size={98} progress={s.sleepSec / SLEEP_TARGET_SEC}>
+                <Ring
+                  size={98}
+                  progress={s.sleepSec / sleepRingTargetSec(ageDays)}
+                  label={`${t.summary.totalSleep} ${sleep.map((p) => `${p.value}${p.unit}`).join('')}`}
+                >
                   <View style={styles.ringText}>
                     <View style={styles.ringRow}>
                       {sleep.map((p) => (
@@ -169,13 +180,23 @@ export default function Summary() {
           </LastCard>
         </View>
 
+        <Guidance
+          title={t.guidance.forAge(lang === 'ja' ? band.ja : band.en)}
+          lines={[
+            t.guidance.feeds(r(band.feeds)),
+            t.guidance.gap(r(band.gapHours)),
+            t.guidance.sleep(r(band.sleepHours)),
+          ]}
+          disclaimer={t.guidance.disclaimer}
+        />
+
         <View style={styles.footer}>
           <SparkHeartIcon size={30} />
           <Txt variant="support" center style={styles.footerText}>
             {anything ? t.summary.allGood : t.summary.quiet}
           </Txt>
         </View>
-      </ScrollView>
+      </LongScroll>
     </Screen>
   );
 }
