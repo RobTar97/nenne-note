@@ -15,6 +15,11 @@
 </p>
 
 <p align="center">
+  <a href="https://robtar97.github.io/nenne-note/">Project site</a> ·
+  <a href="https://github.com/RobTar97/nenne-note">Source and setup</a>
+</p>
+
+<p align="center">
   <img src="design/built/01-home.png" width="24%" alt="Home screen">
   <img src="design/built/02-quick-log.png" width="24%" alt="Quick log">
   <img src="design/built/04-summary.png" width="24%" alt="Daily summary">
@@ -84,6 +89,14 @@ npm run typecheck    # tsc --noEmit
 npx expo-doctor      # project health
 ```
 
+## Project site
+
+The bilingual explainer site is published from [`site/`](site/) by
+[GitHub Actions](.github/workflows/pages.yml):
+[robtar97.github.io/nenne-note](https://robtar97.github.io/nenne-note/).
+To enable it for a repository, open **Settings → Pages** and choose **GitHub
+Actions** as the publishing source.
+
 ---
 
 ## How it works
@@ -99,7 +112,7 @@ src/
   i18n/              ja.ts (primary) · en.ts · duration formatting
   notifications/     reminder scheduling
   store/             AppProvider — settings, baby, haptics
-  utils/             time, useTicker
+  utils/             time, useTicker, useDayStart
 ```
 
 ### Logging model

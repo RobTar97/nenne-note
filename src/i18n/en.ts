@@ -19,6 +19,7 @@ export const en: Dictionary = {
     stop: 'Stop',
     pause: 'Pause',
     resume: 'Resume',
+    retry: 'Try again',
     backToTop: 'Back to top',
   },
 
@@ -116,12 +117,23 @@ export const en: Dictionary = {
     startSleep: 'Start sleep',
     running: 'running',
     deleteConfirm: 'Delete this log?',
+    replaceTitle: 'Replace the current timer?',
+    replaceBody: 'Starting another timer will end the one that is running now.',
+  },
+
+  errors: {
+    title: 'Could not save that',
+    body: 'Your input is still here. Please try again.',
+    timerTitle: 'Could not update the timer',
+    timerBody: 'The timer is still running as before. Please try again.',
+    deleteBody: 'Could not delete it. The log is still there.',
   },
 
   today: {
     title: 'Today',
     empty: 'Nothing logged today yet',
     emptyHint: 'Use the buttons below to add one',
+    startedYesterday: 'Started yesterday',
     encouragement: (who: string) =>
       who ? `You’re doing an amazing job, ${who}` : 'You’re doing an amazing job',
   },

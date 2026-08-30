@@ -20,8 +20,8 @@ export const color = {
 
   /** Primary text and line-art strokes. */
   ink: '#161616',
-  /** Secondary text: labels, units, supporting values. */
-  inkMuted: '#8E8E8E',
+  /** Secondary text: labels, units, supporting values. WCAG AA on `bg`. */
+  inkMuted: '#6B6B6B',
   /** Tertiary text: placeholders, disabled, timeline dots. */
   inkFaint: '#BEBEBE',
   /** Hairlines and dashed dividers. */

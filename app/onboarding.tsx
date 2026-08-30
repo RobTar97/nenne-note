@@ -265,7 +265,7 @@ function WelcomeStep() {
               <Medallion size={54}>{c.icon}</Medallion>
               <View style={styles.cardBody}>
                 <Txt variant="label">{c.title}</Txt>
-                <Txt variant="caption" numberOfLines={2}>
+                <Txt variant="caption">
                   {c.body}
                 </Txt>
               </View>
@@ -281,7 +281,7 @@ function WelcomeStep() {
           <LockIcon size={15} color={color.inkMuted} />
           <Txt variant="caption">{t.onboarding.privacy}</Txt>
         </View>
-        <Txt variant="caption" center color={color.inkFaint}>
+        <Txt variant="caption" center>
           {t.onboarding.privacyBody}
         </Txt>
       </Rise>

@@ -53,7 +53,11 @@ export function TimeRow({ value, onChange }: { value: number; onChange: (ts: num
 
   return (
     <View>
-      <Press style={styles.row} onPress={() => setOpen((o) => !o)} accessibilityLabel={formatClock(value)}>
+      <Press
+        style={styles.row}
+        onPress={() => setOpen((o) => !o)}
+        accessibilityLabel={`${t.log.when}: ${formatClock(value)}`}
+      >
         <ClockIcon size={21} color={color.inkMuted} />
         <Txt variant="label" style={styles.rowText}>
           {isNow ? `${t.common.now} ・ ${formatClock(value)}` : formatClock(value)}
@@ -75,6 +79,8 @@ export function NoteField({
   onChange: (v: string) => void;
   placeholder: string;
 }) {
+  const { t } = useApp();
+
   return (
     <View style={styles.row}>
       <PencilIcon size={20} color={color.inkMuted} />
@@ -82,7 +88,9 @@ export function NoteField({
         value={value}
         onChangeText={onChange}
         placeholder={placeholder}
-        placeholderTextColor={color.inkFaint}
+        placeholderTextColor={color.inkMuted}
+        accessibilityLabel={t.log.note}
+        accessibilityHint={placeholder}
         style={[text.label, styles.input]}
         maxLength={140}
         returnKeyType="done"
@@ -237,7 +245,7 @@ const styles = StyleSheet.create({
   },
   preset: {
     minWidth: 58,
-    minHeight: 40,
+    minHeight: 48,
     paddingHorizontal: space.md,
     borderRadius: radius.pill,
     borderWidth: 1.4,

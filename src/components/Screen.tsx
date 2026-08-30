@@ -34,9 +34,8 @@ export type HeaderAction = {
 /**
  * The header from the mockups: an action, a centred title, an action.
  *
- * The title is absolutely positioned rather than flexed between the two
- * buttons, so it stays optically centred on the screen even when one side has
- * an action and the other doesn't.
+ * Equal-width action slots keep the title optically centred even when only one
+ * side has an action, while the flexible middle lets long titles wrap.
  */
 export function Header({
   title,
@@ -52,11 +51,11 @@ export function Header({
   return (
     <View style={styles.header}>
       <View pointerEvents="none" style={styles.titleWrap}>
-        <Txt variant="title" center numberOfLines={1} accessibilityRole="header">
+        <Txt variant="title" center accessibilityRole="header">
           {title}
         </Txt>
         {subtitle ? (
-          <Txt variant="support" center numberOfLines={1} style={styles.subtitle}>
+          <Txt variant="support" center style={styles.subtitle}>
             {subtitle}
           </Txt>
         ) : null}
@@ -94,14 +93,10 @@ const styles = StyleSheet.create({
     paddingTop: space.sm,
   },
   titleWrap: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    top: space.sm,
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-start',
-    paddingHorizontal: 64,
+    paddingHorizontal: space.sm,
   },
   subtitle: {
     marginTop: 2,

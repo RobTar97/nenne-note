@@ -1,6 +1,7 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
+import { addDays } from 'date-fns';
 import type { Entry } from './types';
-import { DAY, dayStart, overlap } from '@/utils/time';
+import { dayEnd, dayStart, overlap } from '@/utils/time';
 
 /**
  * Derived statistics.
@@ -84,7 +85,7 @@ const EMPTY = (start: number): DaySummary => ({
 });
 
 function foldDay(entries: Entry[], start: number, now: number): DaySummary {
-  const end = start + DAY;
+  const end = dayEnd(start);
   const s = EMPTY(start);
 
   for (const e of entries) {
@@ -131,7 +132,7 @@ export async function daySummary(
   now = Date.now(),
 ): Promise<DaySummary> {
   const start = dayStart(day);
-  const entries = await entriesOverlapping(db, babyId, start, start + DAY);
+  const entries = await entriesOverlapping(db, babyId, start, dayEnd(start));
   return foldDay(entries, start, now);
 }
 
@@ -142,10 +143,10 @@ export async function daySeries(
   days: number,
   now = Date.now(),
 ): Promise<DaySummary[]> {
-  const end = dayStart(now) + DAY;
-  const start = end - days * DAY;
+  const end = dayEnd(now);
+  const start = addDays(new Date(end), -days).getTime();
   const entries = await entriesOverlapping(db, babyId, start, end);
-  return Array.from({ length: days }, (_, i) => foldDay(entries, start + i * DAY, now));
+  return Array.from({ length: days }, (_, i) => foldDay(entries, addDays(new Date(start), i).getTime(), now));
 }
 
 export type Rhythm = {
@@ -183,8 +184,8 @@ export async function rhythm(
   days = 7,
   now = Date.now(),
 ): Promise<Rhythm> {
-  const end = dayStart(now) + DAY;
-  const start = end - days * DAY;
+  const end = dayEnd(now);
+  const start = addDays(new Date(end), -days).getTime();
   const entries = await entriesOverlapping(db, babyId, start, end);
 
   const feeds = entries.filter((e) => e.kind === 'feed').sort((a, b) => a.startedAt - b.startedAt);
@@ -202,7 +203,7 @@ export async function rhythm(
     .map((e) => (e.endedAt! - e.startedAt) / 60_000)
     .filter((m) => m >= 5 && m <= 240);
 
-  const series = Array.from({ length: days }, (_, i) => foldDay(entries, start + i * DAY, now));
+  const series = Array.from({ length: days }, (_, i) => foldDay(entries, addDays(new Date(start), i).getTime(), now));
   // Only count days that actually have data; a fresh install has empty history.
   const active = series.filter((d) => d.feeds > 0 || d.diaperTotal > 0 || d.sleepSec > 0);
 

@@ -20,7 +20,7 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 
-import { color, radius, shadow, space } from '@/design/tokens';
+import { color, hitSlop as makeHitSlop, radius, shadow, space } from '@/design/tokens';
 import { ChevronRightIcon } from '@/icons';
 import { Press } from './Press';
 
@@ -175,6 +175,7 @@ export function LongScroll({
             onPress={toTop}
             accessibilityLabel={backToTopLabel}
             accessibilityHint={backToTopLabel}
+            hitSlop={makeHitSlop(44)}
             style={styles.topButton}
             scale={0.94}
           >

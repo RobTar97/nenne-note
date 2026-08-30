@@ -124,19 +124,29 @@ export default function LogScreen() {
 
   const dismiss = () => router.back();
 
+  const deleteExisting = async () => {
+    if (!existing || busy) return;
+    setBusy(true);
+    try {
+      await deleteEntry(db, existing.id);
+      haptic.warn();
+      dismiss();
+    } catch (e) {
+      console.warn('[log] delete failed', e);
+      Alert.alert(t.errors.title, t.errors.deleteBody, [
+        { text: t.common.cancel, style: 'cancel' },
+        { text: t.common.retry, onPress: () => void deleteExisting() },
+      ]);
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const confirmDelete = () => {
     if (!existing) return;
     Alert.alert(t.log.deleteConfirm, undefined, [
       { text: t.common.cancel, style: 'cancel' },
-      {
-        text: t.common.delete,
-        style: 'destructive',
-        onPress: async () => {
-          await deleteEntry(db, existing.id);
-          haptic.warn();
-          dismiss();
-        },
-      },
+      { text: t.common.delete, style: 'destructive', onPress: () => void deleteExisting() },
     ]);
   };
 
@@ -181,12 +191,18 @@ export default function LogScreen() {
       haptic.success();
       celebrate();
       dismiss();
+    } catch (e) {
+      console.warn('[log] save failed', e);
+      Alert.alert(t.errors.title, t.errors.body, [
+        { text: t.common.cancel, style: 'cancel' },
+        { text: t.common.retry, onPress: () => void save() },
+      ]);
     } finally {
       setBusy(false);
     }
   };
 
-  const beginTimer = async () => {
+  const startTimer = async () => {
     if (!babyId || busy) return;
     setBusy(true);
     try {
@@ -198,6 +214,43 @@ export default function LogScreen() {
       else await startNursing(db, babyId, side, when);
       haptic.commit();
       dismiss();
+    } catch (e) {
+      console.warn('[log] timer start failed', e);
+      Alert.alert(t.errors.timerTitle, t.errors.timerBody, [
+        { text: t.common.cancel, style: 'cancel' },
+        { text: t.common.retry, onPress: () => void startTimer() },
+      ]);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const beginTimer = () => {
+    if (!babyId || busy) return;
+    if (running && running.kind !== kind) {
+      Alert.alert(t.log.replaceTitle, t.log.replaceBody, [
+        { text: t.common.cancel, style: 'cancel' },
+        { text: t.common.start, onPress: () => void startTimer() },
+      ]);
+      return;
+    }
+    void startTimer();
+  };
+
+  const stopLive = async () => {
+    if (!running || busy) return;
+    setBusy(true);
+    try {
+      await stopRunning(db, running);
+      haptic.commit();
+      celebrate();
+      dismiss();
+    } catch (e) {
+      console.warn('[log] timer stop failed', e);
+      Alert.alert(t.errors.timerTitle, t.errors.timerBody, [
+        { text: t.common.cancel, style: 'cancel' },
+        { text: t.common.retry, onPress: () => void stopLive() },
+      ]);
     } finally {
       setBusy(false);
     }
@@ -358,12 +411,7 @@ export default function LogScreen() {
             <PrimaryButton
               label={t.common.stop}
               icon={<StopIcon size={20} color={color.onFill} />}
-              onPress={async () => {
-                await stopRunning(db, running);
-                haptic.commit();
-                celebrate();
-                dismiss();
-              }}
+              onPress={stopLive}
               busy={busy}
             />
           ) : isTimerFlow ? (
@@ -428,6 +476,24 @@ function LiveSession({ entry }: { entry: Entry }) {
   const now = useTicker(1000);
   const seconds = elapsedSec(entry, now);
   const live = sideSeconds(entry, now);
+  const [switching, setSwitching] = useState(false);
+
+  const changeSide = async (next: NursingSide | null) => {
+    if (switching) return;
+    setSwitching(true);
+    try {
+      await setNursingSide(db, entry, next);
+      haptic.select();
+    } catch (e) {
+      console.warn('[log] nursing side change failed', e);
+      Alert.alert(t.errors.timerTitle, t.errors.timerBody, [
+        { text: t.common.cancel, style: 'cancel' },
+        { text: t.common.retry, onPress: () => void changeSide(next) },
+      ]);
+    } finally {
+      setSwitching(false);
+    }
+  };
 
   return (
     <View style={styles.live}>
@@ -455,11 +521,8 @@ function LiveSession({ entry }: { entry: Entry }) {
             return (
               <Press
                 key={s}
-                onPress={() => {
-                  haptic.select();
-                  // Tapping the active control pauses; the session stays open.
-                  setNursingSide(db, entry, active ? null : s);
-                }}
+                disabled={switching}
+                onPress={() => void changeSide(active ? null : s)}
                 accessibilityRole="button"
                 accessibilityState={{ selected: active }}
                 accessibilityLabel={label}

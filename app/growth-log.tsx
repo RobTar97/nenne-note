@@ -255,7 +255,7 @@ function Measure({
           value={value}
           onChangeText={onChange}
           placeholder={placeholder}
-          placeholderTextColor={color.inkFaint}
+          placeholderTextColor={color.inkMuted}
           keyboardType="decimal-pad"
           style={[text.metric, styles.measureInput]}
           maxLength={6}

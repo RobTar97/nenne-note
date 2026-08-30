@@ -32,7 +32,7 @@ export function LastCard({
       <Medallion size={82}>{icon}</Medallion>
       <View style={styles.body}>
         <View style={styles.titleRow}>
-          <Txt variant="heading" numberOfLines={1} style={styles.title}>
+          <Txt variant="heading" style={styles.title}>
             {title}
           </Txt>
           <ChevronRightIcon size={18} color={color.inkFaint} />
@@ -63,7 +63,7 @@ export function CardStat({
       {label ? (
         <View style={styles.statLabel}>
           {icon}
-          <Txt variant="caption" numberOfLines={1}>
+          <Txt variant="caption">
             {label}
           </Txt>
         </View>

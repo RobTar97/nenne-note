@@ -29,10 +29,12 @@ export function BarChart({
   bars,
   height = 132,
   formatValue,
+  accessibilityLabel,
 }: {
   bars: Bar[];
   height?: number;
   formatValue?: (v: number) => string;
+  accessibilityLabel?: string;
 }) {
   // The real peak is what the scale label reports; the divisor is clamped so a
   // week with no data still lays out instead of dividing by zero.
@@ -42,7 +44,11 @@ export function BarChart({
   const step = Math.min(STAGGER, 450 / Math.max(1, bars.length));
 
   return (
-    <View>
+    <View
+      accessible={!!accessibilityLabel}
+      accessibilityRole={accessibilityLabel ? 'image' : undefined}
+      accessibilityLabel={accessibilityLabel}
+    >
       {formatValue && peak > 0 ? (
         <View style={styles.scaleRow}>
           <Txt variant="caption">{formatValue(peak)}</Txt>
@@ -103,7 +109,6 @@ function Column({
     <View style={styles.column}>
       <Animated.View
         style={[styles.bar, bar.emphasis ? styles.barOn : null, style]}
-        accessibilityLabel={`${bar.label}: ${bar.value}`}
       />
     </View>
   );

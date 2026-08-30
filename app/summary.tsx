@@ -27,6 +27,8 @@ import { daySummary, type DaySummary } from '@/db/stats';
 import { ageInDays, formatClock } from '@/utils/time';
 import { bandFor, range, rangeEn, sleepRingTargetSec } from '@/data/feeding';
 import { durationParts } from '@/i18n';
+import { useTicker } from '@/utils/useTicker';
+import { useDayStart } from '@/utils/useDayStart';
 
 const EMPTY: DaySummary = {
   dayStart: 0,
@@ -48,10 +50,12 @@ export default function Summary() {
   const router = useRouter();
   const { t, lang, baby } = useApp();
   const babyId = baby?.id ?? 0;
+  const today = useDayStart();
+  const now = useTicker(60_000);
 
   const { data: s } = useLive<DaySummary>(
-    async (db) => (babyId ? daySummary(db, babyId) : EMPTY),
-    [babyId],
+    async (db) => (babyId ? daySummary(db, babyId, today, now) : EMPTY),
+    [babyId, today, now],
     EMPTY,
     ['entry'],
   );
@@ -60,11 +64,12 @@ export default function Summary() {
 
   const anything = s.diaperTotal > 0 || s.feeds > 0 || s.sleepSec > 0;
   const sleep = durationParts(s.sleepSec, lang, t);
+  const sleepLabel = sleep.map((p) => `${p.value}${p.unit}`).join('');
 
   // The ring fills to the top of this baby's age band rather than a fixed 16
   // hours, so a one-year-old sleeping twelve hours reads as a full night
   // instead of a ring three-quarters empty.
-  const ageDays = ageInDays(baby.birthday);
+  const ageDays = ageInDays(baby.birthday, today);
   const band = bandFor(ageDays);
   const r = lang === 'ja' ? range : rangeEn;
 
@@ -87,7 +92,7 @@ export default function Summary() {
         <View style={styles.cards}>
           <LastCard
             title={t.summary.diaperTitle}
-            accessibilityLabel={t.summary.diaperTitle}
+            accessibilityLabel={`${t.summary.diaperTitle} — ${t.diaper.pee}: ${s.pee} — ${t.diaper.poop}: ${s.poop}`}
             icon={<DiaperIcon size={46} />}
             onPress={() => goStats('diaper')}
           >
@@ -112,7 +117,9 @@ export default function Summary() {
 
           <LastCard
             title={t.summary.feedTitle}
-            accessibilityLabel={t.summary.feedTitle}
+            accessibilityLabel={`${t.summary.feedTitle} — ${t.summary.totalFeeds}: ${s.feeds} — ${t.summary.lastFeeding}: ${
+              s.lastFeedAt ? formatClock(s.lastFeedAt) : '—'
+            }`}
             icon={<BottleIcon size={44} />}
             onPress={() => goStats('feed')}
           >
@@ -135,13 +142,15 @@ export default function Summary() {
 
           <LastCard
             title={t.summary.sleepTitle}
-            accessibilityLabel={t.summary.sleepTitle}
+            accessibilityLabel={`${t.summary.sleepTitle} — ${t.summary.totalSleep}: ${sleepLabel || '—'} — ${
+              t.summary.lastNap
+            }: ${s.lastSleepStart ? formatClock(s.lastSleepStart) : '—'}`}
             icon={<SleepIcon size={46} />}
             onPress={() => goStats('sleep')}
           >
             <View style={styles.split}>
               <View style={styles.sleepCol}>
-                <Txt variant="caption" numberOfLines={1} style={styles.sleepLabel}>
+                <Txt variant="caption" style={styles.sleepLabel}>
                   {t.summary.totalSleep}
                 </Txt>
                 <Ring
@@ -186,6 +195,7 @@ export default function Summary() {
             t.guidance.feeds(r(band.feeds)),
             t.guidance.gap(r(band.gapHours)),
             t.guidance.sleep(r(band.sleepHours)),
+            t.guidance.wet(r(band.wetNappies)),
           ]}
           disclaimer={t.guidance.disclaimer}
         />

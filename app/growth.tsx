@@ -149,13 +149,13 @@ export default function GrowthScreen() {
                 <CardPress
                   key={r.id}
                   style={styles.row}
-                  accessibilityLabel={dateLabel(r.measuredAt)}
+                  accessibilityLabel={`${dateLabel(r.measuredAt)} — ${describe(r, t)}`}
                   onPress={() => router.push({ pathname: '/growth-log', params: { id: String(r.id) } })}
                 >
                   <Txt variant="label" style={styles.rowDate}>
                     {dateLabel(r.measuredAt)}
                   </Txt>
-                  <Txt variant="support" numberOfLines={1} style={styles.rowValues}>
+                  <Txt variant="support" style={styles.rowValues}>
                     {describe(r, t)}
                   </Txt>
                   <ChevronRightIcon size={16} color={color.inkFaint} />

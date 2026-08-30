@@ -24,9 +24,10 @@ import { useApp } from '@/store/app';
 import { useLive } from '@/db/live';
 import { elapsedSec, listEntries } from '@/db/repo';
 import type { Entry, EntryKind } from '@/db/types';
-import { dayEnd, dayStart, formatClock } from '@/utils/time';
+import { dayEnd, formatClock } from '@/utils/time';
 import { formatDuration } from '@/i18n';
 import { useTicker } from '@/utils/useTicker';
+import { useDayStart } from '@/utils/useDayStart';
 
 type Filter = 'all' | EntryKind;
 
@@ -42,12 +43,12 @@ export default function Today() {
   );
 
   const babyId = baby?.id ?? 0;
-  const today = Date.now();
+  const today = useDayStart();
 
   const { data: entries } = useLive<Entry[]>(
     async (db) =>
-      babyId ? listEntries(db, babyId, dayStart(today), dayEnd(today)) : [],
-    [babyId],
+      babyId ? listEntries(db, babyId, today, dayEnd(today)) : [],
+    [babyId, today],
     [],
     ['entry'],
   );
@@ -115,9 +116,14 @@ export default function Today() {
             <TimelineRow
               key={e.id}
               entry={e}
+              visibleDayStart={today}
               first={i === 0}
               last={i === visible.length - 1}
-              onPress={() => router.push({ pathname: '/log', params: { id: String(e.id) } })}
+              onPress={() =>
+                e.endedAt === null
+                  ? router.push({ pathname: '/log', params: { kind: e.kind } })
+                  : router.push({ pathname: '/log', params: { id: String(e.id) } })
+              }
             />
           ))
         )}
@@ -145,11 +151,13 @@ export default function Today() {
  */
 function TimelineRow({
   entry,
+  visibleDayStart,
   first,
   last,
   onPress,
 }: {
   entry: Entry;
+  visibleDayStart: number;
   first: boolean;
   last: boolean;
   onPress: () => void;
@@ -160,6 +168,10 @@ function TimelineRow({
   const now = useTicker(1000, running);
 
   const { title, sub, icon } = describe(entry, t, lang, now);
+  const startedYesterday = entry.kind === 'sleep' && entry.startedAt < visibleDayStart;
+  const dayNote = startedYesterday ? t.today.startedYesterday : null;
+  const displaySub = [dayNote, sub].filter(Boolean).join(' ・ ');
+  const spokenLabel = [title, formatClock(entry.startedAt), dayNote, sub].filter(Boolean).join(' — ');
 
   return (
     <View style={styles.row}>
@@ -172,15 +184,15 @@ function TimelineRow({
         <View style={[styles.dot, running && styles.dotOn]} />
       </View>
 
-      <CardPress onPress={onPress} accessibilityLabel={title} style={styles.card}>
+      <CardPress onPress={onPress} accessibilityLabel={spokenLabel} style={styles.card}>
         <Medallion size={62}>{icon}</Medallion>
         <View style={styles.cardBody}>
-          <Txt variant="heading" numberOfLines={1}>
+          <Txt variant="heading">
             {title}
           </Txt>
-          {sub ? (
-            <Txt variant="support" numberOfLines={1}>
-              {sub}
+          {displaySub ? (
+            <Txt variant="support">
+              {displaySub}
             </Txt>
           ) : null}
         </View>

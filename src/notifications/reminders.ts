@@ -178,8 +178,12 @@ export async function syncReminders(
 
   const t = dictionaries[settings.language];
   const now = Date.now();
+  const running = await runningEntry(db, babyId);
 
-  if (settings.remindFeed) {
+  // While nursing is active, the feed itself is the most recent signal. A
+  // reminder based on the previous finished feed would be noisy and could
+  // arrive in the middle of the current session.
+  if (settings.remindFeed && running?.kind !== 'feed') {
     const feed = await lastEntry(db, babyId, 'feed');
     if (feed) {
       const at = feed.startedAt + settings.remindFeedMin * 60_000;
@@ -200,7 +204,6 @@ export async function syncReminders(
   }
 
   if (settings.remindTimer) {
-    const running = await runningEntry(db, babyId);
     if (running) {
       const at = running.startedAt + TIMER_NUDGE_MIN * 60_000;
       if (at > now + 30_000) {

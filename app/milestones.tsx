@@ -19,7 +19,7 @@ import { Card } from '@/components/Surface';
 import { PeekBear } from '@/icons/PeekBear';
 import { CheckIcon, ChevronLeftIcon, SparkleIcon } from '@/icons';
 import { timings } from '@/design/motion';
-import { color, radius, space } from '@/design/tokens';
+import { color, hitSlop as makeHitSlop, radius, space } from '@/design/tokens';
 import { useApp } from '@/store/app';
 import { useLive } from '@/db/live';
 import { listMilestones, toggleMilestone } from '@/db/repo';
@@ -195,7 +195,13 @@ function Row({
       </Press>
 
       {on && achievedAt != null ? (
-        <Press onPress={onEditDate} accessibilityLabel={editHint} style={styles.dateChip} scale={0.94}>
+        <Press
+          onPress={onEditDate}
+          accessibilityLabel={editHint}
+          hitSlop={makeHitSlop(34)}
+          style={styles.dateChip}
+          scale={0.94}
+        >
           <SparkleIcon size={11} color={color.inkMuted} />
           <Txt variant="caption">{dateLabel(achievedAt)}</Txt>
         </Press>

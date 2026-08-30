@@ -24,6 +24,7 @@ export const ja = {
     stop: 'おわり',
     pause: '一時停止',
     resume: 'さいかい',
+    retry: 'もう一度',
     backToTop: '上にもどる',
   },
 
@@ -120,12 +121,23 @@ export const ja = {
     startSleep: 'ねんねをはじめる',
     running: 'すすんでいます',
     deleteConfirm: 'この記録を削除しますか？',
+    replaceTitle: 'いまのタイマーをおわらせますか？',
+    replaceBody: '別のタイマーをはじめると、いま動いているタイマーはここで終了します。',
+  },
+
+  errors: {
+    title: '保存できませんでした',
+    body: '入力内容はそのままです。もう一度お試しください。',
+    timerTitle: 'タイマーを更新できませんでした',
+    timerBody: 'タイマーはそのままです。もう一度お試しください。',
+    deleteBody: '削除できませんでした。記録は残っています。',
   },
 
   today: {
     title: '今日',
     empty: 'まだ今日の記録はありません',
     emptyHint: '下のボタンから記録できます',
+    startedYesterday: 'きのうから',
     encouragement: (who: string) => (who ? `今日もよくがんばってるね、${who}` : '今日もよくがんばってるね'),
   },
 

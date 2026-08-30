@@ -11,11 +11,13 @@ import { Press } from '@/components/Press';
 import { Card, DashedRule } from '@/components/Surface';
 import { BarChart, type Bar } from '@/components/BarChart';
 import { BottleIcon, ChevronLeftIcon, DiaperIcon, SleepIcon, TimerIcon } from '@/icons';
-import { color, radius, space } from '@/design/tokens';
+import { HIT_TARGET, color, radius, space } from '@/design/tokens';
 import { useApp } from '@/store/app';
 import { useLive } from '@/db/live';
 import { daySeries, rhythm, type DaySummary, type Rhythm } from '@/db/stats';
 import { formatClock } from '@/utils/time';
+import { useTicker } from '@/utils/useTicker';
+import { useDayStart } from '@/utils/useDayStart';
 
 type Focus = 'diaper' | 'feed' | 'sleep';
 
@@ -39,18 +41,20 @@ export default function Stats() {
   const { t, lang, baby } = useApp();
   const params = useLocalSearchParams<{ focus?: string }>();
   const [days, setDays] = useState<7 | 30>(7);
+  const today = useDayStart();
+  const now = useTicker(60_000);
 
   const babyId = baby?.id ?? 0;
   const { data } = useLive(
     async (db) => {
       if (!babyId) return EMPTY;
       const [series, r] = await Promise.all([
-        daySeries(db, babyId, days),
-        rhythm(db, babyId, Math.max(days, 7)),
+        daySeries(db, babyId, days, now),
+        rhythm(db, babyId, Math.max(days, 7), now),
       ]);
       return { series, r };
     },
-    [babyId, days],
+    [babyId, days, today, now],
     EMPTY,
     ['entry'],
   );
@@ -60,8 +64,8 @@ export default function Stats() {
 
   const label = (d: DaySummary) =>
     lang === 'ja'
-      ? format(d.dayStart, 'd', { locale: jaLocale })
-      : format(d.dayStart, 'd', { locale: enUS });
+      ? format(d.dayStart, days === 30 ? 'M/d' : 'd', { locale: jaLocale })
+      : format(d.dayStart, days === 30 ? 'M/d' : 'd', { locale: enUS });
 
   const charts = useMemo(() => {
     const last = data.series.length - 1;
@@ -163,7 +167,13 @@ export default function Stats() {
               <Txt variant="heading">{c.title}</Txt>
             </View>
             <DashedRule style={styles.rule} />
-            <BarChart bars={c.bars} formatValue={(v) => `${v}${c.unit}`} />
+            <BarChart
+              bars={c.bars}
+              formatValue={(v) => `${v}${c.unit}`}
+              accessibilityLabel={`${c.title} — ${days === 7 ? t.stats.week : t.stats.month} — ${c.bars
+                .map((b) => `${b.label}: ${b.value}${c.unit}`)
+                .join(', ')}`}
+            />
           </Card>
         ))}
       </LongScroll>
@@ -201,7 +211,7 @@ const styles = StyleSheet.create({
   },
   range: {
     paddingHorizontal: space.base,
-    minHeight: 40,
+    minHeight: HIT_TARGET,
     borderRadius: radius.pill,
     borderWidth: 1.4,
     borderColor: color.hairline,

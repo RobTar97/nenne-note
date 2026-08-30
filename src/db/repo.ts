@@ -189,7 +189,13 @@ export async function getEntry(db: SQLiteDatabase, id: number): Promise<Entry | 
   return r ? toEntry(r) : null;
 }
 
-/** Entries overlapping [from, to). Newest first. */
+/**
+ * Entries overlapping [from, to). Newest first.
+ *
+ * Point events have `ended_at === started_at`, so the final OR keeps them in
+ * the day they started while the first two terms include a sleep that began
+ * before the day and is still running or ended inside it.
+ */
 export async function listEntries(
   db: SQLiteDatabase,
   babyId: number,
@@ -199,10 +205,11 @@ export async function listEntries(
 ): Promise<Entry[]> {
   const rows = await db.getAllAsync<EntryRow>(
     `SELECT * FROM entry
-      WHERE baby_id = ? AND started_at >= ? AND started_at < ?
+      WHERE baby_id = ? AND started_at < ?
+        AND (ended_at IS NULL OR ended_at > ? OR started_at >= ?)
         ${kind ? 'AND kind = ?' : ''}
       ORDER BY started_at DESC`,
-    ...([babyId, from, to, ...(kind ? [kind] : [])] as never[]),
+    ...([babyId, to, from, from, ...(kind ? [kind] : [])] as never[]),
   );
   return rows.map(toEntry);
 }
