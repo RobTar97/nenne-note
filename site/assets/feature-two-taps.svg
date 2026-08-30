@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 80" role="img" aria-labelledby="title desc">
+  <title id="title">Two taps</title>
+  <desc id="desc">Two outlined touch points joined by a short line.</desc>
+  <g fill="none" stroke="#49636d" stroke-linecap="round" stroke-linejoin="round" stroke-width="3">
+    <circle cx="42" cy="40" r="18"/>
+    <circle cx="118" cy="40" r="18"/>
+    <path d="M60 40h40"/>
+  </g>
+  <circle cx="42" cy="40" r="5" fill="#49636d"/>
+  <circle cx="118" cy="40" r="5" fill="#49636d"/>
+</svg>

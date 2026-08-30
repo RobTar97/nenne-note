@@ -95,7 +95,11 @@ The bilingual explainer site is published from [`site/`](site/) by
 [GitHub Actions](.github/workflows/pages.yml):
 [robtar97.github.io/nenne-note](https://robtar97.github.io/nenne-note/).
 To enable it for a repository, open **Settings → Pages** and choose **GitHub
-Actions** as the publishing source.
+Actions** as the publishing source. The page is intentionally dependency-free:
+Japanese is the default for Japanese browsers, English is available from the
+language toggle, and the site uses no external fonts, analytics, ads, or
+third-party scripts. The maintainer guide is in
+[`docs/project-site.md`](docs/project-site.md).
 
 ---
 

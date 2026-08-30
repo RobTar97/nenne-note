@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 80" role="img" aria-labelledby="title desc">
+  <title id="title">On this device</title>
+  <desc id="desc">A simple device outline with a local status mark.</desc>
+  <g fill="none" stroke="#49636d" stroke-linecap="round" stroke-linejoin="round" stroke-width="3">
+    <rect x="48" y="9" width="64" height="62" rx="10"/>
+    <path d="M69 19h22"/>
+    <path d="M73 59h14"/>
+    <circle cx="80" cy="42" r="8"/>
+  </g>
+  <circle cx="80" cy="42" r="3.5" fill="#49636d"/>
+</svg>

@@ -3,19 +3,55 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#f4f4f4">
+    <meta name="theme-color" content="#f6f7f8">
+    <meta name="color-scheme" content="light">
+    <meta name="author" content="Robert Tarczynski">
     <meta name="robots" content="index,follow">
     <meta name="description" data-i18n-attr="content:metaDescription" content="ねんねノートは、おむつ・授乳・ねんねを2タップで記録できる、端末保存の赤ちゃんログです。">
     <link rel="canonical" href="https://robtar97.github.io/nenne-note/">
+    <link rel="alternate" hreflang="ja" href="https://robtar97.github.io/nenne-note/">
+    <link rel="alternate" hreflang="en" href="https://robtar97.github.io/nenne-note/?lang=en">
+    <link rel="alternate" hreflang="x-default" href="https://robtar97.github.io/nenne-note/">
     <meta property="og:type" content="website">
+    <meta property="og:site_name" content="ねんねノート / Nenne Note">
     <meta property="og:url" content="https://robtar97.github.io/nenne-note/">
+    <meta property="og:locale" content="ja_JP">
+    <meta property="og:locale:alternate" content="en_US">
     <meta property="og:title" data-i18n-attr="content:metaTitle" content="ねんねノート — 片手で使える赤ちゃんの記録">
     <meta property="og:description" data-i18n-attr="content:metaDescription" content="ねんねノートは、おむつ・授乳・ねんねを2タップで記録できる、端末保存の赤ちゃんログです。">
     <meta property="og:image" content="https://robtar97.github.io/nenne-note/assets/icon-v2.png">
+    <meta property="og:image:alt" data-i18n-attr="content:brandAlt" content="ねんねノートのロゴ">
     <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" data-i18n-attr="content:metaTitle" content="ねんねノート — 片手で使える赤ちゃんの記録">
+    <meta name="twitter:description" data-i18n-attr="content:metaDescription" content="ねんねノートは、おむつ・授乳・ねんねを2タップで記録できる、端末保存の赤ちゃんログです。">
+    <meta name="twitter:image" content="https://robtar97.github.io/nenne-note/assets/icon-v2.png">
     <title>ねんねノート — 片手で使える赤ちゃんの記録</title>
     <link rel="icon" href="./assets/favicon.png">
+    <link rel="apple-touch-icon" href="./assets/icon-v2.png">
     <link rel="stylesheet" href="./styles.css">
+    <script type="application/ld+json" id="structured-data">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "SoftwareApplication",
+            "name": "ねんねノート / Nenne Note",
+            "applicationCategory": "LifestyleApplication",
+            "operatingSystem": "Android, iOS",
+            "url": "https://robtar97.github.io/nenne-note/",
+            "downloadUrl": "https://github.com/RobTar97/nenne-note",
+            "description": "A local-first baby log for diapers, feeds, sleep, growth and firsts.",
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+          },
+          {
+            "@type": "WebSite",
+            "name": "ねんねノート / Nenne Note",
+            "url": "https://robtar97.github.io/nenne-note/",
+            "inLanguage": ["ja", "en"]
+          }
+        ]
+      }
+    </script>
     <script defer src="./script.js"></script>
   </head>
   <body>
@@ -23,7 +59,7 @@
 
     <header class="site-header">
       <div class="container header-inner">
-        <a class="brand" href="#top" aria-label="ねんねノート" data-i18n-attr="aria-label:brandName">
+        <a class="brand" href="#top" data-i18n-attr="aria-label:brandName">
           <img src="./assets/icon-v2.png" width="40" height="40" alt="ねんねノートのロゴ" data-i18n-attr="alt:brandAlt">
           <span data-i18n="brandName">ねんねノート</span>
         </a>
@@ -37,60 +73,88 @@
 
         <div class="header-actions">
           <button class="language-toggle" id="language-toggle" type="button" aria-pressed="false" aria-label="英語に切り替える">
-            English
+            <span data-i18n="toggle">English</span>
           </button>
           <a class="header-github" href="https://github.com/RobTar97/nenne-note" target="_blank" rel="noopener noreferrer" data-i18n="github">GitHub</a>
         </div>
       </div>
     </header>
 
+    <p class="visually-hidden" id="language-status" role="status" aria-live="polite"></p>
+
     <main id="main">
-      <section class="hero section" id="top" aria-labelledby="hero-title">
+      <section class="hero" id="top" aria-labelledby="hero-title">
         <div class="container hero-grid">
           <div class="hero-copy">
-            <p class="eyebrow" data-i18n="eyebrow">ねんねノート / NENNE NOTE</p>
-            <h1 id="hero-title" data-i18n="heroTitle">片手で、さっと残せる
+            <p class="hero-kicker"><span>NENNE NOTE</span><span data-i18n="heroKicker">LOCAL BABY LOG</span></p>
+            <h1 id="hero-title" data-i18n="heroTitle">片手で、
+さっと残せる。
 赤ちゃんの記録</h1>
-            <p class="hero-lead" data-i18n="heroLead">おむつ・授乳・ねんねを、夜中でも2タップで。アカウントも通信もありません。</p>
+            <p class="hero-lead" data-i18n="heroLead">おむつ・授乳・ねんねを、夜中でも2タップで。アカウントもクラウドもありません。</p>
             <div class="hero-actions">
               <a class="button button-primary" href="#how" data-i18n="heroPrimary">使い方を見る</a>
               <a class="button button-secondary" href="https://github.com/RobTar97/nenne-note" target="_blank" rel="noopener noreferrer" data-i18n="heroSecondary">GitHubで見る</a>
             </div>
-            <p class="hero-note" data-i18n="heroNote">無料。記録はこの端末に保存されます。</p>
+            <ul class="hero-facts" aria-label="アプリの特徴" data-i18n-attr="aria-label:heroFactsLabel">
+              <li><strong data-i18n="heroFactOneValue">2タップ</strong><span data-i18n="heroFactOneLabel">で記録</span></li>
+              <li><strong data-i18n="heroFactTwoValue">端末内</strong><span data-i18n="heroFactTwoLabel">に保存</span></li>
+              <li><strong data-i18n="heroFactThreeValue">0アカウント</strong><span data-i18n="heroFactThreeLabel">登録不要</span></li>
+            </ul>
           </div>
 
-          <div class="hero-visual" aria-label="アプリのホーム画面" data-i18n-attr="aria-label:heroVisualLabel">
-            <div class="hero-ring hero-ring-one"></div>
-            <div class="hero-ring hero-ring-two"></div>
-            <figure class="phone phone-hero">
+          <figure class="hero-visual">
+            <div class="hero-visual-meta" aria-hidden="true">
+              <span data-i18n="heroVisualMetaOne">TODAY / 03:14</span>
+              <span data-i18n="heroVisualMetaTwo">SAVED LOCALLY</span>
+            </div>
+            <svg class="hero-signal" viewBox="0 0 720 420" aria-hidden="true" focusable="false">
+              <path class="signal-line" d="M22 220h136c18 0 20-70 42-70s24 140 48 140 28-112 52-112 26 42 48 42h146c18 0 22-54 44-54s26 108 50 108 24-54 52-54h58"/>
+              <path class="signal-baseline" d="M22 220h676"/>
+              <circle class="signal-node" cx="158" cy="220" r="7"/>
+              <circle class="signal-node" cx="348" cy="220" r="7"/>
+              <circle class="signal-node" cx="546" cy="220" r="7"/>
+            </svg>
+            <div class="hero-visual-note hero-visual-note-top" aria-hidden="true"><span data-i18n="heroVisualNoteOne">ONE HAND</span><span>↗</span></div>
+            <div class="hero-visual-note hero-visual-note-bottom" aria-hidden="true"><span data-i18n="heroVisualNoteTwo">NO CLOUD</span><span>—</span></div>
+            <div class="phone phone-hero">
               <img src="./assets/01-home.png" width="1080" height="2400" alt="赤ちゃんの名前と、おむつ・授乳・ねんねのカードが並ぶホーム画面" data-i18n-attr="alt:heroAlt" fetchpriority="high">
-            </figure>
-          </div>
+            </div>
+            <figcaption class="visually-hidden" data-i18n="heroVisualCaption">ねんねノートのホーム画面</figcaption>
+          </figure>
         </div>
       </section>
 
-      <section class="section section-tight" aria-labelledby="features-title">
+      <section class="section feature-section" id="features" aria-labelledby="features-title">
         <div class="container">
-          <div class="section-heading">
-            <p class="eyebrow" data-i18n="featuresEyebrow">必要なものだけ</p>
-            <h2 id="features-title" data-i18n="featuresTitle">眠い時間のための、静かな道具。</h2>
+          <div class="section-intro">
+            <h2 id="features-title" data-i18n="featuresTitle">静かであることを、機能にする。</h2>
+            <p data-i18n="featuresLead">眠い時間に必要なのは、考えることを増やすアプリではありません。よく使う記録を近くに置き、あとで今日の流れが分かるようにしました。</p>
           </div>
 
-          <div class="feature-grid">
-            <article class="feature-card">
-              <span class="feature-index">01</span>
-              <h3 data-i18n="featureOneTitle">2タップで記録</h3>
-              <p data-i18n="featureOneBody">おしっこ、うんち、ミルク、ねんね。迷う画面を増やさず、よく使う操作を近くに置きました。</p>
+          <div class="feature-list">
+            <article class="feature-row">
+              <div class="feature-mark"><img src="./assets/feature-two-taps.svg" width="160" height="80" alt="" aria-hidden="true"></div>
+              <div>
+                <h3 data-i18n="featureOneTitle">よく使う記録を、親指の近くに。</h3>
+                <p data-i18n="featureOneBody">おむつ、ミルク、母乳、ねんね。迷う画面を増やさず、起きたことをすぐ残せます。</p>
+              </div>
+              <span class="feature-side" data-i18n="featureOneSide">DIAPER · FEED · SLEEP</span>
             </article>
-            <article class="feature-card">
-              <span class="feature-index">02</span>
-              <h3 data-i18n="featureTwoTitle">端末の中だけ</h3>
-              <p data-i18n="featureTwoBody">アカウントもクラウドもありません。ログは端末のローカルデータベースに保存されます。</p>
+            <article class="feature-row">
+              <div class="feature-mark"><img src="./assets/feature-local.svg" width="160" height="80" alt="" aria-hidden="true"></div>
+              <div>
+                <h3 data-i18n="featureTwoTitle">記録は、この端末の中だけに。</h3>
+                <p data-i18n="featureTwoBody">アカウントもクラウドもありません。ローカルのデータベースに保存される、シンプルな記録です。</p>
+              </div>
+              <span class="feature-side" data-i18n="featureTwoSide">LOCAL SQLITE</span>
             </article>
-            <article class="feature-card">
-              <span class="feature-index">03</span>
-              <h3 data-i18n="featureThreeTitle">今日が見える</h3>
-              <p data-i18n="featureThreeBody">タイムライン、今日のまとめ、記録の流れ。細かく分析するより、次に必要なことが分かります。</p>
+            <article class="feature-row">
+              <div class="feature-mark"><img src="./assets/feature-rhythm.svg" width="160" height="80" alt="" aria-hidden="true"></div>
+              <div>
+                <h3 data-i18n="featureThreeTitle">今日と、いつものリズムを見やすく。</h3>
+                <p data-i18n="featureThreeBody">今日のタイムライン、まとめ、7日間と30日間の傾向。比べるためではなく、次に必要なことを知るために。</p>
+              </div>
+              <span class="feature-side" data-i18n="featureThreeSide">TODAY · TRENDS</span>
             </article>
           </div>
         </div>
@@ -98,31 +162,31 @@
 
       <section class="section section-dark" id="how" aria-labelledby="how-title">
         <div class="container">
-          <div class="section-heading section-heading-dark">
-            <p class="eyebrow" data-i18n="howEyebrow">HOW IT WORKS</p>
+          <div class="workflow-head">
+            <p class="workflow-marker"><span class="workflow-dot"></span><span data-i18n="howMarker">3 steps, then back to life</span></p>
             <h2 id="how-title" data-i18n="howTitle">開いて、選んで、戻る。</h2>
             <p data-i18n="howLead">記録のために、生活を止めなくていいように。</p>
           </div>
 
           <ol class="steps">
             <li class="step">
-              <span class="step-number">1</span>
+              <span class="step-number">01</span>
               <div>
                 <h3 data-i18n="stepOneTitle">起きたことを選ぶ</h3>
-                <p data-i18n="stepOneBody">おむつ、授乳、ねんねから選びます。</p>
+                <p data-i18n="stepOneBody">クイックログを開いて、おむつ・授乳・ねんねから選びます。</p>
               </div>
             </li>
             <li class="step">
-              <span class="step-number">2</span>
+              <span class="step-number">02</span>
               <div>
-                <h3 data-i18n="stepTwoTitle">必要な分だけ記録する</h3>
-                <p data-i18n="stepTwoBody">ミルクは量、母乳とねんねはタイマー。メモや時刻はあとからでも大丈夫です。</p>
+                <h3 data-i18n="stepTwoTitle">必要な分だけ残す</h3>
+                <p data-i18n="stepTwoBody">ミルクは量、母乳とねんねはタイマー。メモや時刻は、あとからでも大丈夫です。</p>
               </div>
             </li>
             <li class="step">
-              <span class="step-number">3</span>
+              <span class="step-number">03</span>
               <div>
-                <h3 data-i18n="stepThreeTitle">今日の流れに戻る</h3>
+                <h3 data-i18n="stepThreeTitle">今日に戻る</h3>
                 <p data-i18n="stepThreeBody">保存したらホームへ。今日の記録と、赤ちゃん自身のリズムを見られます。</p>
               </div>
             </li>
@@ -130,28 +194,28 @@
         </div>
       </section>
 
-      <section class="section" id="screens" aria-labelledby="screens-title">
+      <section class="section screens-section" id="screens" aria-labelledby="screens-title">
         <div class="container">
-          <div class="section-heading">
-            <p class="eyebrow" data-i18n="screensEyebrow">THE SCREENS</p>
-            <h2 id="screens-title" data-i18n="screensTitle">必要な情報を、必要な場所に。</h2>
+          <div class="section-intro section-intro-wide">
+            <h2 id="screens-title" data-i18n="screensTitle">必要な情報を、すぐ近くに。</h2>
+            <p data-i18n="screensLead">入口はクイックログ。そこから、今日の流れとこの子のリズムへ自然につながります。</p>
           </div>
 
           <div class="screen-grid">
-            <figure class="screen-card screen-card-large">
-              <div class="phone phone-screen"><img src="./assets/02-quick-log.png" width="1080" height="2400" loading="lazy" decoding="async" alt="おむつ・授乳・ねんねを選ぶクイックログ画面" data-i18n-attr="alt:screenQuickAlt"></div>
+            <figure class="screen-card screen-card-featured">
+              <div class="screen-frame"><div class="phone phone-screen"><img src="./assets/02-quick-log.png" width="1080" height="2400" loading="lazy" decoding="async" alt="おむつ・授乳・ねんねを選ぶクイックログ画面" data-i18n-attr="alt:screenQuickAlt"></div></div>
               <figcaption><strong data-i18n="screenQuickTitle">クイックログ</strong><span data-i18n="screenQuickBody">よく使う記録を、片手で。</span></figcaption>
             </figure>
             <figure class="screen-card">
-              <div class="phone phone-screen"><img src="./assets/03-today.png" width="1080" height="2400" loading="lazy" decoding="async" alt="時刻順に並んだ今日のタイムライン" data-i18n-attr="alt:screenTodayAlt"></div>
+              <div class="screen-frame"><div class="phone phone-screen"><img src="./assets/03-today.png" width="1080" height="2400" loading="lazy" decoding="async" alt="時刻順に並んだ今日のタイムライン" data-i18n-attr="alt:screenTodayAlt"></div></div>
               <figcaption><strong data-i18n="screenTodayTitle">今日</strong><span data-i18n="screenTodayBody">一日の流れをひと目で。</span></figcaption>
             </figure>
             <figure class="screen-card">
-              <div class="phone phone-screen"><img src="./assets/04-summary.png" width="1080" height="2400" loading="lazy" decoding="async" alt="おむつ・授乳・ねんねの今日のまとめ" data-i18n-attr="alt:screenSummaryAlt"></div>
+              <div class="screen-frame"><div class="phone phone-screen"><img src="./assets/04-summary.png" width="1080" height="2400" loading="lazy" decoding="async" alt="おむつ・授乳・ねんねの今日のまとめ" data-i18n-attr="alt:screenSummaryAlt"></div></div>
               <figcaption><strong data-i18n="screenSummaryTitle">今日のまとめ</strong><span data-i18n="screenSummaryBody">合計と目安を、静かに。</span></figcaption>
             </figure>
             <figure class="screen-card">
-              <div class="phone phone-screen"><img src="./assets/05-stats.png" width="1080" height="2400" loading="lazy" decoding="async" alt="7日間と30日間の記録の流れ" data-i18n-attr="alt:screenStatsAlt"></div>
+              <div class="screen-frame"><div class="phone phone-screen"><img src="./assets/05-stats.png" width="1080" height="2400" loading="lazy" decoding="async" alt="7日間と30日間の記録の流れ" data-i18n-attr="alt:screenStatsAlt"></div></div>
               <figcaption><strong data-i18n="screenStatsTitle">記録の流れ</strong><span data-i18n="screenStatsBody">この子のリズムを見る。</span></figcaption>
             </figure>
           </div>
@@ -159,26 +223,30 @@
       </section>
 
       <section class="section section-paper" id="privacy" aria-labelledby="privacy-title">
-        <div class="container privacy-grid">
+        <div class="container privacy-layout">
           <div class="privacy-copy">
-            <p class="eyebrow" data-i18n="privacyEyebrow">PRIVATE BY DEFAULT</p>
+            <p class="privacy-label"><span class="privacy-label-dot"></span><span data-i18n="privacyLabel">PRIVATE BY DEFAULT</span></p>
             <h2 id="privacy-title" data-i18n="privacyTitle">赤ちゃんの記録は、端末の中に。</h2>
             <p data-i18n="privacyBody">ねんねノートはローカルのSQLiteデータベースを使います。アカウントも、ログをサーバーへ送る同期もありません。</p>
+            <a class="text-link" href="#faq"><span data-i18n="privacyLink">プライバシーについて、よくある質問を見る</span> <span aria-hidden="true">↗</span></a>
           </div>
-          <ul class="privacy-list">
-            <li><span class="list-mark">—</span><span data-i18n="privacyOne">アカウント不要</span></li>
-            <li><span class="list-mark">—</span><span data-i18n="privacyTwo">クラウド同期なし</span></li>
-            <li><span class="list-mark">—</span><span data-i18n="privacyThree">広告・アクセス解析なし</span></li>
-            <li><span class="list-mark">—</span><span data-i18n="privacyFour">自動バックアップなし。端末だけに保存</span></li>
-          </ul>
+          <div class="privacy-detail">
+            <img src="./assets/local-boundary.svg" width="520" height="360" loading="lazy" decoding="async" alt="" aria-hidden="true">
+            <ul class="privacy-list">
+              <li><span data-i18n="privacyOne">アカウント不要</span><span aria-hidden="true">↗</span></li>
+              <li><span data-i18n="privacyTwo">クラウド同期なし</span><span aria-hidden="true">↗</span></li>
+              <li><span data-i18n="privacyThree">広告・アクセス解析なし</span><span aria-hidden="true">↗</span></li>
+              <li><span data-i18n="privacyFour">自動バックアップなし。端末だけに保存</span><span aria-hidden="true">↗</span></li>
+            </ul>
+          </div>
         </div>
       </section>
 
-      <section class="section" id="faq" aria-labelledby="faq-title">
-        <div class="container faq-container">
-          <div class="section-heading">
-            <p class="eyebrow" data-i18n="faqEyebrow">FAQ</p>
-            <h2 id="faq-title" data-i18n="faqTitle">気になること。</h2>
+      <section class="section faq-section" id="faq" aria-labelledby="faq-title">
+        <div class="container faq-layout">
+          <div class="section-intro">
+            <h2 id="faq-title" data-i18n="faqTitle">気になることを、先に。</h2>
+            <p data-i18n="faqLead">記録の中身と、できること・できないことを簡潔にまとめました。</p>
           </div>
           <div class="faq-list">
             <details>
@@ -187,7 +255,7 @@
             </details>
             <details>
               <summary data-i18n="faqTwoQuestion">何を記録できますか？</summary>
-              <p data-i18n="faqTwoAnswer">おむつ（おしっこ・うんち）、ミルク、母乳、ねんねを記録できます。成長の計測や「はじめて」の記録もあります。</p>
+              <p data-i18n="faqTwoAnswer">おむつ（おしっこ・うんち）、ミルク、母乳、ねんねを記録できます。成長の計測や「はじめて」の記録もあります。リマインダーは任意で、端末内の通知です。</p>
             </details>
             <details>
               <summary data-i18n="faqThreeQuestion">どこから試せますか？</summary>
@@ -203,9 +271,13 @@
 
       <section class="section final-cta" aria-labelledby="cta-title">
         <div class="container final-cta-inner">
-          <p class="eyebrow" data-i18n="ctaEyebrow">READY WHEN YOU ARE</p>
+          <svg class="cta-mark" viewBox="0 0 180 44" aria-hidden="true" focusable="false">
+            <path d="M4 22h172"/>
+            <circle cx="48" cy="22" r="5"/>
+            <circle cx="132" cy="22" r="5"/>
+          </svg>
           <h2 id="cta-title" data-i18n="ctaTitle">まずは、記録をひとつ。</h2>
-          <p data-i18n="ctaBody">使い方とソースコードをGitHubで確認できます。</p>
+          <p data-i18n="ctaBody">アプリの使い方とソースコードをGitHubで確認できます。</p>
           <a class="button button-primary" href="https://github.com/RobTar97/nenne-note" target="_blank" rel="noopener noreferrer" data-i18n="ctaButton">ソースとセットアップを見る</a>
         </div>
       </section>
@@ -213,7 +285,10 @@
 
     <footer class="site-footer">
       <div class="container footer-inner">
-        <span>© 2026 ねんねノート</span>
+        <div>
+          <strong data-i18n="footerBrand">ねんねノート</strong>
+          <span class="footer-meta" data-i18n="footerMeta">local-first baby log · MIT licence</span>
+        </div>
         <div class="footer-links">
           <a href="https://github.com/RobTar97/nenne-note" target="_blank" rel="noopener noreferrer" data-i18n="footerRepo">GitHub</a>
           <a href="#privacy" data-i18n="footerPrivacy">プライバシー</a>

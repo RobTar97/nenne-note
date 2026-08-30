@@ -37,6 +37,9 @@ jobs:
           test -f site/robots.txt
           test -f site/sitemap.xml
           test -f site/assets/icon-v2.png
+          for illustration in feature-two-taps feature-local feature-rhythm local-boundary; do
+            test -f "site/assets/${illustration}.svg"
+          done
           for image in 01-home 02-quick-log 03-today 04-summary 05-stats; do
             test -f "site/assets/${image}.png"
           done

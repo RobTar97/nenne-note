@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 360" role="img" aria-labelledby="title desc">
+  <title id="title">A local data boundary</title>
+  <desc id="desc">Nested device-shaped outlines with a single local data point.</desc>
+  <g fill="none" stroke="#49636d" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="36" y="48" width="448" height="264" rx="30" stroke-width="2" opacity=".28"/>
+    <rect x="92" y="80" width="336" height="200" rx="22" stroke-width="2" opacity=".48"/>
+    <rect x="182" y="104" width="156" height="152" rx="18" stroke-width="3"/>
+    <path d="M234 122h52" stroke-width="3"/>
+    <path d="M242 228h36" stroke-width="3"/>
+    <circle cx="260" cy="182" r="26" stroke-width="3"/>
+  </g>
+  <circle cx="260" cy="182" r="9" fill="#49636d"/>
+  <circle cx="54" cy="68" r="5" fill="#49636d" opacity=".8"/>
+  <circle cx="466" cy="292" r="5" fill="#49636d" opacity=".8"/>
+</svg>
